@@ -2100,14 +2100,6 @@ document.addEventListener('DOMContentLoaded', () => {
         og.label = s.part;
         sel.appendChild(og);
         ogPart = s.part;
-        // パート扉スライドへ飛ぶ項目を先頭に置く
-        const p = PARTS.find(p => p.title === s.part);
-        if (p && p.slide < s.slide) {
-          const po = document.createElement('option');
-          po.value = p.slide;
-          po.textContent = '▸ ' + s.part;
-          og.appendChild(po);
-        }
       }
       og.appendChild(o);
     } else {
@@ -3217,6 +3209,10 @@ $$\text{需要の価格弾力性}= -\frac{\text{需要量の変化率}}{\text{�
 
  
 <li><span class="keyword">ラムゼイ・ルール</span>(Ramsey, 1927，逆弾力性ルールとも):</li>
+<li class="spacer"></li>
+<li class="spacer"></li>
+<li class="spacer"></li>
+
 </ul>
 </template>
 
@@ -3483,14 +3479,23 @@ $$\text{需要の価格弾力性}= -\frac{\text{需要量の変化率}}{\text{�
 </li>
 <ul>
 <li>市場均衡価格はどうなるか？</li>
+<li class="spacer"></li>
+<li class="spacer"></li>
+
 <li>生産者余剰はどうなるか？</li>
+<li class="spacer"></li>
+<li class="spacer"></li>
+
   <li> 社会的総余剰はどうなるか？</li>
+  <li class="spacer"></li>
+<li class="spacer"></li>
+
 </ul>
 </ul>
 </div>
 <div class="column">
 <ul>
-<li>カルテルを作るときの図</li>
+<li>カルテルを作るとき（3500と虚偽表明）の図</li>
 </ul>
 </div>
 </div>
@@ -5043,11 +5048,11 @@ $$\frac{w}{MP_L}= \frac{r}{MP_K} \Rightarrow \frac{MP_K}{MP_L}= \frac{r}{w}$$
 
 
 
-<template class="slide-data" data-title="" data-section="独占市場" data-note="false" data-print-margin="0">
+<template class="slide-data" data-title="" data-section="売り方の設計" data-note="false" data-print-margin="0">
 <div class="section-title-big">価格差別</div>
 </template>
 
-<template class="slide-data" data-title="売り方の工夫---価格差別" data-section="独占市場" data-note="false" data-print-margin="0">
+<template class="slide-data" data-title="売り方の工夫---価格差別" data-section="売り方の設計" data-note="false" data-print-margin="0">
 <ul>
 <li>同じ財なら同じ価格で売られなければいけない？</li>
 <li class="sub-item"><span class="keyword">一物一価の法則</span></li>
@@ -5062,7 +5067,7 @@ $$\frac{w}{MP_L}= \frac{r}{MP_K} \Rightarrow \frac{MP_K}{MP_L}= \frac{r}{w}$$
 </ul>
 </template>
 
-<template class="slide-data" data-title="なるべく余剰を搾取せよ---完全価格差別" data-section="独占市場" data-note="false" data-print-margin="300">
+<template class="slide-data" data-title="なるべく余剰を搾取せよ---完全価格差別" data-section="売り方の設計" data-note="false" data-print-margin="300">
 <div class="columns">
 <div class="column">
 <ul>
@@ -5085,7 +5090,7 @@ $$\frac{w}{MP_L}= \frac{r}{MP_K} \Rightarrow \frac{MP_K}{MP_L}= \frac{r}{w}$$
 </div>
 </template>
 
-<template class="slide-data" data-title="完全価格差別の何が問題か" data-section="独占市場" data-note="false" data-print-margin="300">
+<template class="slide-data" data-title="完全価格差別の何が問題か" data-section="売り方の設計" data-note="false" data-print-margin="300">
 <table class="slide-table">
 <tr><th></th><th>アダム</th><th>イヴ</th><th>ルツ</th></tr>
 <tr><td>支払意思額</td><td>6000円</td><td>10000円</td><td>11000円</td></tr>
@@ -5122,7 +5127,7 @@ $$\frac{w}{MP_L}= \frac{r}{MP_K} \Rightarrow \frac{MP_K}{MP_L}= \frac{r}{w}$$
 </div>
 </template>
 
-<template class="slide-data" data-title="学割は学生のためか？---属性による価格差別" data-section="独占市場" data-note="false" data-print-margin="300">
+<template class="slide-data" data-title="学割は学生のためか？---属性による価格差別" data-section="売り方の設計" data-note="false" data-print-margin="300">
 <div class="columns">
 <div class="column">
 <ul>
@@ -5144,73 +5149,8 @@ $$\frac{w}{MP_L}= \frac{r}{MP_K} \Rightarrow \frac{MP_K}{MP_L}= \frac{r}{w}$$
 </div>
 </template>
 
-<template class="slide-data" data-title="自己選択による価格差別（第二種価格差別）" data-section="独占市場" data-note="false" data-print-margin="300">
-<div class="columns">
-<div class="column">
-<ul>
-<li>企業は顧客の情報を知らないので，完全価格差別も属性による価格差別もできないときがある．</li>
-<li class="sub-item arrow">→ 顧客の<span class="keyword">自己選択</span>によって情報を引き出す</li>
-<li class="sub-item"><span class="keyword">スクリーニング</span>，あるいは<span class="keyword">第二種価格差別</span>と呼ばれる．</li>
-</ul>
-</div>
-<div class="column">
-<ul>
-<li>次の状況を考える．顧客は二人．AタイプとBタイプがいるが，どちらがどちらかわからない．</li>
-</ul>
-<table class="slide-table">
-<tr><th></th><th>ケーキ</th><th>コーヒー</th></tr>
-<tr><td>Aタイプ</td><td>600円</td><td>100円</td></tr>
-<tr><td>Bタイプ</td><td>700円</td><td>300円</td></tr>
-</table>
-<p class="small">※表の数字は支払意思額</p>
-<ul>
-<li>どのように売るのが正解？</li>
-</ul>
-</div>
-</div>
-</template>
 
-<template class="slide-data" data-title="第二種価格差別：いろいろな売り方" data-section="独占市場" data-note="false" data-print-margin="300">
-<table class="slide-table">
-<tr><th></th><th>ケーキ</th><th>コーヒー</th></tr>
-<tr><td>Aタイプ</td><td>600円</td><td>100円</td></tr>
-<tr><td>Bタイプ</td><td>700円</td><td>300円</td></tr>
-</table>
-<table class="slide-table fill-table">
-<tr><th>売り方</th><th>Aが買うもの</th><th>Bが買うもの</th><th>売上</th></tr>
-<tr><td>ケーキ600円・コーヒー100円</td><td></td><td></td><td></td></tr>
-<tr><td>セット700円</td><td></td><td></td><td></td></tr>
-<tr><td>ケーキ単品600円・セット899円</td><td></td><td></td><td></td></tr>
-<tr><td></td><td></td><td></td><td></td></tr>
-</table>
-<ul>
-<li>どの売り方がいちばん売上が大きいか？他にもっと良い売り方はあるか？</li>
-</ul>
-</template>
-
-<template class="slide-data" data-title="身の回りの第二種価格差別" data-section="独占市場" data-note="false" data-print-margin="300">
-<div class="columns">
-<div class="column">
-<ul>
-<li>次の例では，どのように顧客に「自己選択」させているか？</li>
-<li class="sub-item">航空券の早割と普通運賃</li>
-<li class="sub-item">ソフトウェアの無料版と有料版</li>
-<li class="sub-item">まとめ買い割引・大容量パック</li>
-<li class="sub-item">スマホの料金プラン</li>
-<li class="sub-item">クーポン・ポイントカード</li>
-</ul>
-</div>
-<div class="column">
-<ul>
-<li>メモ</li>
-</ul>
-<div class="write-space"></div>
-<div class="write-space"></div>
-</div>
-</div>
-</template>
-
-<template class="slide-data" data-title="まとめて売ることの意味---バンドリング" data-section="独占市場" data-note="false" data-print-margin="300">
+<template class="slide-data" data-title="まとめて売ることの意味---バンドリング" data-section="売り方の設計" data-note="false" data-print-margin="300">
 <div class="columns">
 <div class="column">
 <ul>
@@ -5252,7 +5192,7 @@ $$\frac{w}{MP_L}= \frac{r}{MP_K} \Rightarrow \frac{MP_K}{MP_L}= \frac{r}{w}$$
 </div>
 </template>
 
-<template class="slide-data" data-title="考えてみよう：漫画の売り方" data-section="独占市場" data-note="false" data-print-margin="300">
+<template class="slide-data" data-title="考えてみよう：漫画の売り方" data-section="売り方の設計" data-note="false" data-print-margin="300">
 <ul>
 <li>タイプの違う漫画が二つ（AとB）ある．消費者は二人（アダムとイヴ）．</li>
 </ul>
@@ -5273,17 +5213,52 @@ $$\frac{w}{MP_L}= \frac{r}{MP_K} \Rightarrow \frac{MP_K}{MP_L}= \frac{r}{w}$$
 </ul>
 </template>
 
-<template class="slide-data" data-title="価格差別のまとめ" data-section="独占市場" data-note="false" data-print-margin="0">
-<table class="slide-table fill-table tall">
-<tr><th>種類</th><th>方法</th><th>企業が知っている必要があること</th><th>例</th></tr>
-<tr><td>第一種（完全価格差別）</td><td></td><td></td><td></td></tr>
-<tr><td>第二種（自己選択）</td><td></td><td></td><td></td></tr>
-<tr><td>第三種（属性）</td><td></td><td></td><td></td></tr>
+
+
+<template class="slide-data" data-title="自己選択による価格差別（第二種価格差別）" data-section="売り方の設計" data-note="false" data-print-margin="300">
+<div class="columns">
+<div class="column">
+<ul>
+<li>企業は顧客の情報を知らないので，完全価格差別も属性による価格差別もできないときがある．</li>
+<li class="sub-item arrow">→ 顧客の<span class="keyword">自己選択</span>によって情報を引き出す</li>
+<li class="sub-item"><span class="keyword">スクリーニング</span>，あるいは<span class="keyword">第二種価格差別</span>と呼ばれる．</li>
+</ul>
+</div>
+<div class="column">
+<ul>
+<li>次の状況を考える．顧客は二人．AタイプとBタイプがいるが，どちらがどちらかわからない．</li>
+</ul>
+<table class="slide-table">
+<tr><th></th><th>ケーキ</th><th>コーヒー</th></tr>
+<tr><td>Aタイプ</td><td>600円</td><td>100円</td></tr>
+<tr><td>Bタイプ</td><td>700円</td><td>300円</td></tr>
+</table>
+<p class="small">※表の数字は支払意思額</p>
+<ul>
+<li>どのように売るのが正解？</li>
+</ul>
+</div>
+</div>
+</template>
+
+<template class="slide-data" data-title="第二種価格差別：いろいろな売り方" data-section="売り方の設計" data-note="false" data-print-margin="300">
+<table class="slide-table">
+<tr><th></th><th>ケーキ</th><th>コーヒー</th></tr>
+<tr><td>Aタイプ</td><td>600円</td><td>100円</td></tr>
+<tr><td>Bタイプ</td><td>700円</td><td>300円</td></tr>
+</table>
+<table class="slide-table fill-table">
+<tr><th>売り方</th><th>Aが買うもの</th><th>Bが買うもの</th><th>売上</th></tr>
+<tr><td>ケーキ600円・コーヒー100円</td><td></td><td></td><td></td></tr>
+<tr><td>セット700円</td><td></td><td></td><td></td></tr>
+<tr><td>ケーキ単品600円・セット899円</td><td></td><td></td><td></td></tr>
+<tr><td></td><td></td><td></td><td></td></tr>
 </table>
 <ul>
-<li>学割チケットを社会人に転売できたら，価格差別はどうなるか？</li>
+<li>どの売り方がいちばん売上が大きいか？他にもっと良い売り方はあるか？</li>
 </ul>
 </template>
+
 
 <template class="slide-data" data-title="" data-section="売り方の設計" data-note="false" data-print-margin="0">
 <div class="section-title-big">オークション</div>
