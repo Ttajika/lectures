@@ -311,6 +311,25 @@ body.print-mode .tikz-figure { cursor:default; }
   border:1px solid var(--border); padding:4px 12px; text-align:center;
 }
 
+/* マッチング表：縦に並んだ買手と売手が1つの組であることをカードで示す */
+.match-table { border-collapse:separate; border-spacing:10px 0; margin:8px auto; }
+.match-table th { border:none; padding:4px 8px; text-align:right; font-weight:600; white-space:nowrap; }
+.match-table td {
+  background:var(--accent-light); text-align:center; padding:4px 14px; min-width:4.5em;
+  border-left:2px solid #93c5fd; border-right:2px solid #93c5fd;
+}
+.match-table tr:first-child td { border-top:2px solid #93c5fd; border-radius:8px 8px 0 0; padding-top:8px; }
+.match-table tr:last-child td { border-bottom:2px solid #93c5fd; border-radius:0 0 8px 8px; padding-bottom:8px; }
+.match-table tr.name td { font-weight:700; }
+.match-table tr.match-link td { color:var(--accent); font-size:1.4em; line-height:1.3; padding:2px 0; }
+.match-table tr.match-link th { color:var(--accent); font-size:0.85em; font-weight:500; }
+.match-table tr.blank td { height:2.2em; background:var(--surface); border-top:1px dashed #93c5fd; }
+.match-table tr.blank-first td { border-top:1.5px dashed #93c5fd; }
+.match-table tr.match-surplus td { height:2em; background:var(--keyword-bg); }
+.match-table.compact { border-spacing:6px 0; margin:8px 0 8px -1.5em; } /* ul の字下げを打ち消して列の左端に揃える */
+.match-table.compact th { padding:4px 4px; }
+.match-table.compact td { min-width:0; padding-left:8px; padding-right:8px; }
+
 .multicols { column-count:2; column-gap:24px; }
 
 .note-frame {
@@ -387,6 +406,11 @@ body:not(.page-break-on) .print-part-head { page-break-before:auto; break-before
 .print-slide-title .section-title-big {
   padding:12px 0;
 }
+
+/* Print: .columns.print-stack stacks vertically on handouts (slide view unchanged),
+   so wide tables get the full page width */
+.print-slide .columns.print-stack { flex-direction:column; gap:28px; }
+.print-slide .columns.print-stack > .column + .column { border-left:none; padding-left:0; }
 
 /* Print: figures get proper spacing */
 .print-slide .tikz-figure { margin:8px 0 12px; }
@@ -2633,12 +2657,14 @@ $$\text{効用}=\text{便益}-\text{費用}$$
 </template>
 
 <template class="slide-data" data-title="適当なマッチングを考える..." data-section="需要と供給" data-note="false" data-print-margin="500">
-<table class="slide-table">
-<tr><th>家が欲しい人</th><td>天照</td><td>出雲</td><td>高木</td><td>月読</td><td>大和</td></tr>
+<table class="match-table">
+<tr class="name"><th>家が欲しい人</th><td>天照</td><td>出雲</td><td>高木</td><td>月読</td><td>大和</td></tr>
 <tr><th><span class="keyword">支払意思額</span>（万円）</th><td>5000</td><td>3500</td><td>2000</td><td>1000</td><td>800</td></tr>
-<tr><td colspan="6" style="height:2em;"></td></tr>
-<tr><th>大工</th><td>アダム</td><td>イヴ</td><td>ルツ</td><td>ヤコブ</td><td>ヨセフ</td></tr>
+<tr class="match-link"><th>取引</th><td>↕</td><td>↕</td><td>↕</td><td>↕</td><td>↕</td></tr>
+<tr class="name"><th>大工</th><td>アダム</td><td>イヴ</td><td>ルツ</td><td>ヤコブ</td><td>ヨセフ</td></tr>
 <tr><th>費用（万円）</th><td>4500</td><td>3200</td><td>1800</td><td>950</td><td>850</td></tr>
+<tr class="blank blank-first"><th>取引の成否</th><td></td><td></td><td></td><td></td><td></td></tr>
+<tr class="blank"><th>取引<span class="keyword">余剰</span>（万円）</th><td></td><td></td><td></td><td></td><td></td></tr>
 </table>
 <div class="columns">
 <div class="column"><ul>
@@ -2699,7 +2725,67 @@ $$\text{効用}=\text{便益}-\text{費用}$$
 <ul>
 <li>需要量と供給量が一致するときの価格を<span class="keyword">（市場）均衡価格</span>と呼ぶ</li>
 <li class="sub-item">「均衡」は選択の次に経済学にとって大事な要素</li>
+
+<table class="slide-table">
+<tr><th>家が欲しい人（買手）</th><td>天照</td><td>出雲</td><td>高木</td><td>月読</td><td>大和</td></tr>
+<tr><th><span class="keyword">支払意思額</span>（万円）</th><td>5000</td><td>3500</td><td>2000</td><td>1000</td><td>800</td></tr>
+<tr><th>大工（売手）</th><td>アダム</td><td>イヴ</td><td>ルツ</td><td>ヤコブ</td><td>ヨセフ</td></tr>
+<tr><th>費用（万円）</th><td>4500</td><td>3200</td><td>1800</td><td>950</td><td>850</td></tr>
+</table>
+
+<li>市場均衡で取引できるのは？</li>
+
+
 <li>均衡価格では"ある意味"不満がない</li>
+<ul>
+<li>誰も既に成立した取引を壊すことができない</li>
+<li class="spacer">
+<li class="spacer">
+<li class="spacer">
+<li class="spacer">
+<li class="spacer">
+<li class="spacer">
+
+</li>
+</ul>
+</ul>
+</div>
+</div>
+</template>
+
+
+<template class="slide-data" data-title="市場均衡" data-section="需要と供給" data-note="false" data-print-margin="0">
+<div class="columns print-stack">
+<div class="column">
+<div class="tikz-figure"><img src="img_micro/fig_eq_discrete.svg" alt="市場均衡と余剰"></div>
+</div>
+<div class="column">
+<ul>
+<table class="slide-table">
+<tr><th>家が欲しい人（買手）</th><td>天照</td><td>出雲</td><td>高木</td><td>月読</td><td>大和</td></tr>
+<tr><th><span class="keyword">支払意思額</span>（万円）</th><td>5000</td><td>3500</td><td>2000</td><td>1000</td><td>800</td></tr>
+<tr><th>大工（売手）</th><td>アダム</td><td>イヴ</td><td>ルツ</td><td>ヤコブ</td><td>ヨセフ</td></tr>
+<tr><th>費用（万円）</th><td>4500</td><td>3200</td><td>1800</td><td>950</td><td>850</td></tr>
+</table>
+
+<li>取引できたことによる「利益」の総額を考える</li>
+<ul>
+<li>市場均衡での余剰は？</li>
+<li class="spacer"> 
+<li class="spacer"> 
+<li class="spacer"> 
+<li class="spacer"> 
+<li class="spacer"> 
+
+<li>テキトーなマッチングと比較してみる</li>
+</ul>
+<table class="match-table compact">
+<tr class="name"><th>家が欲しい人</th><td>天照</td><td>出雲</td><td>高木</td><td>月読</td><td>大和</td></tr>
+<tr><th><span class="keyword">支払意思額</span></th><td>5000</td><td>3500</td><td>2000</td><td>1000</td><td>800</td></tr>
+<tr class="match-surplus"><th>取引<span class="keyword">余剰</span></th><td></td><td></td><td></td><td></td><td></td></tr>
+<tr class="name"><th>大工</th><td>アダム</td><td>イヴ</td><td>ルツ</td><td>ヤコブ</td><td>ヨセフ</td></tr>
+<tr><th>費用</th><td>4500</td><td>3200</td><td>1800</td><td>950</td><td>850</td></tr>
+</table>
 </ul>
 </div>
 </div>
