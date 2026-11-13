@@ -1397,6 +1397,8 @@ function showSlide(idx) {
   // Update URL hash without triggering hashchange
   history.replaceState(null, '', '#' + (idx + 1));
   renderSlide(idx);
+  // 印刷用表示ボタンはトップ画面（1枚目）だけに出す
+  document.getElementById('modeToggle').style.display = (idx === 0) ? '' : 'none';
   let pageText = (idx+1) + ' / ' + SLIDES.length;
   if (filteredIndices && filteredIndices.length > 0) {
     const pos = filteredIndices.indexOf(idx);
@@ -1726,6 +1728,7 @@ function enterPrintMode() {
   notes[current] = document.getElementById('noteArea').value;
   document.body.className = 'print-mode' + (pageBreakOn ? ' page-break-on' : '');
   document.getElementById('modeToggle').textContent = '🖥 スライド表示';
+  document.getElementById('modeToggle').style.display = '';
 
   const main = document.getElementById('mainArea');
   const area = document.getElementById('slideArea');
@@ -2878,18 +2881,7 @@ $$\text{効用}=\text{便益}-\text{費用}$$
 <div class="tikz-figure anim" style="--ar:620/400"><img src="img_micro/discrete_to_continuous_anime.svg" alt="階段状の需要・供給曲線から滑らかな需要・供給曲線へ"></div>
 </template>
 
-<template class="slide-data" data-title="滑らかな需要曲線・供給曲線での余剰" data-section="需要と供給" data-note="false" data-print-margin="300">
-<div class="columns">
-<div class="column">
-<ul>
-<li>数式で需要曲線・供給曲線が与えられているケース</li>
-<li class="sub-item">需要曲線：$P=21-3Q$</li>
-<li class="sub-item">供給曲線：$P=2Q+1$</li>
-</ul>
-</div>
-<div class="column"></div>
-</div>
-</template>
+
 
 <template class="slide-data" data-title="余剰について" data-section="需要と供給" data-note="false" data-print-margin="0">
 <div class="columns">
@@ -3131,20 +3123,16 @@ $$\text{需要の価格弾力性}= -\frac{\text{需要量の変化率}}{\text{�
 <tr><td>2019</td><td>$481</td><td>15.62M</td><td></td></tr>
 <tr><td>2020</td><td>$309</td><td>14.22M</td><td>コロナショック</td></tr>
 </table>
-</div>
-<div class="column">
 <p style="text-align:center;">データ出典</p>
 <a href="https://ourworldindata.org/grapher/world-crude-oil-price-vs-oil-consumption" target="_blank" class="qr-link">🔗 QRリンク</a>
+</div>
+<div class="column">
+
 </div>
 </div>
 </template>
 
-<template class="slide-data" data-title="" data-section="需要と供給" data-note="false" data-print-margin="0">
-<ul>
-<li>オイルショックは需要側のショック？供給側のショック？</li>
-<li>コロナショックは需要側のショック？供給側のショック？</li>
-</ul>
-</template>
+
 
 <template class="slide-data" data-title="曲線シフトから需要・供給曲線を明らかにする" data-section="需要と供給" data-note="false" data-print-margin="0">
 <div class="columns">
@@ -4346,7 +4334,7 @@ $$m= p_{x}\cdot q_{x}+p_{y}\cdot q_{y}$$
 <li class="sub-item">$MU_x$: 財$x$の<span class="keyword">限界効用</span></li>
 <li class="sub-item">$MU_y$: 財$y$の<span class="keyword">限界効用</span></li>
 <li>ある財の限界効用：その財の消費量をほんの少し増やしたときの効用の増分</li>
-<li class="sub-item">ex. おおざっぱに言えば $MU_{x}=3$ ならば「$q_x$を$1\%$増やしたとき，効用は$3\%$増える」</li>
+<li class="sub-item">ex. おおざっぱに言えば $MU_{x}=3$ ならば「$q_x$を$1$単位増やしたとき，効用はおよそ$3$増える」</li>
 <ul>
 <li>無差別曲線の凸性から</li>
 <li class="sub-item">$MU_x$: 財$x$の限界効用は$x$の消費量が増えると減る</li>
@@ -4963,8 +4951,8 @@ $$C(q)= w\cdot L^*(q,\bar K)+r\cdot \bar K$$
 <li class="sub-item">$MP_L$: 労働の<span class="keyword">限界生産物</span></li>
 <li class="sub-item">$MP_K$: 資本の<span class="keyword">限界生産物</span></li>
 <li>ある生産要素の限界生産物：その生産要素の投入量をほんの少し増やしたときの生産量の増分</li>
-<li class="sub-item">ex. おおざっぱに言えば $MP_L=3$ ならば「$L$の投入量を$1\%$増やしたとき，生産量は$3\%$増える」</li>
-<li>限界変形率との関係</li>
+<li class="sub-item">ex. おおざっぱに言えば $MP_L=3$ ならば「$L$の投入量を$1$単位増やしたとき，生産量はおよそ$3$増える」</li>
+<li>技術的限界代替率との関係</li>
 </ul>
 </template>
 
@@ -4982,7 +4970,7 @@ $$C(q)= w\cdot L^*(q,\bar K)+r\cdot \bar K$$
 </div>
 </template>
 
-<template class="slide-data" data-title="限界変形率と要素価格比" data-section="企業の行動" data-note="false" data-print-margin="0">
+<template class="slide-data" data-title="技術的限界代替率と要素価格比" data-section="企業の行動" data-note="false" data-print-margin="0">
 <div class="columns">
 <div class="column">
 <ul>
