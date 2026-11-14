@@ -1833,7 +1833,7 @@ function parseVimeoUrl(url) {
   // Handles vimeo.com/ID and vimeo.com/ID/HASH
   const m = url.match(/vimeo\.com\/([\d]+)(?:\/([a-zA-Z0-9]+))?/);
   if (!m) return null;
-  let src = 'https://player.vimeo.com/video/' + m[1] + '?autoplay=1';
+  let src = 'https://player.vimeo.com/video/' + m[1] + '?autoplay=0';   // 開いても自動では再生しない（▶ で再生）
   if (m[2]) src += '&h=' + m[2];
   return src;
 }
