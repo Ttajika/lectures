@@ -108,6 +108,8 @@ body.slide-mode { height:100vh; overflow:hidden; display:flex; flex-direction:co
   display:inline-flex; align-items:center; justify-content:center; gap:4px;
 }
 .nav-btn:hover { background:rgba(255,255,255,0.12); color:#fff; }
+.nav-btn.this-week { border-color:var(--accent-soft); color:var(--accent-soft); font-weight:700; padding:0 10px; white-space:nowrap; }
+.nav-btn.this-week:hover { background:var(--accent-soft); color:var(--header-bg); }
 /* 線画アイコン（Lucide, ISC License） */
 .ic { width:18px; height:18px; flex:none; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
 .nav-sep { width:1px; height:18px; background:rgba(255,255,255,0.18); margin:0 4px; flex:none; }
@@ -827,6 +829,8 @@ body.print-mode .fab-pen { display: none !important; }
     <select class="section-select" id="sectionSelect" onchange="goToSection(this.value)">
       <option value="">— 目次 —</option>
     </select>
+    <!-- 今週の回（公開日を過ぎたいちばん新しい回）へ移動。日程 CSV から決める。スマホでは出さない -->
+    <button class="nav-btn this-week sp-hide" id="thisWeekBtn" style="display:none" onclick="goLecture(this.dataset.lec)"></button>
     <span class="nav-sep sp-hide"></span>
     <button class="nav-btn sp-hide" onclick="goSlide(0)" title="最初のスライド"><svg class="ic"><use href="#i-first"/></svg></button>
     <button class="nav-btn" onclick="prevSlide()" title="前へ (←)"><svg class="ic"><use href="#i-prev"/></svg></button>
@@ -2387,7 +2391,28 @@ function fillLecDates(root) {
     el.textContent = `公開予定日：${d.getMonth() + 1}/${d.getDate()}（${WEEKDAY[d.getDay()]}）${hm}`;
   });
 }
-document.addEventListener('slideboard:schedule', () => fillLecDates(document));
+document.addEventListener('slideboard:schedule', () => { fillLecDates(document); updateThisWeek(); });
+
+// 「今週：第N回」ボタン：公開日を過ぎた回のうちいちばん新しい回。公開から 14 日を過ぎたら出さない
+function updateThisWeek() {
+  const btn = document.getElementById('thisWeekBtn');
+  const sched = window.SlideBoard && SlideBoard.schedule;
+  if (!btn || !sched) return;
+  const now = new Date();
+  const lecs = new Set(SLIDES.map(s => s.lecture).filter(Boolean));
+  let best = null;
+  sched.forEach((d, name) => {
+    if (lecs.has(name) && d <= now && (!best || d > best.d)) best = { name, d };
+  });
+  if (!best || now - best.d > 14 * 864e5) { btn.style.display = 'none'; return; }
+  const i = SLIDES.findIndex(s => s.lecture === best.name);
+  const head = SLIDES[i].html.match(/section-title-big[^>]*>([^<]*)</);
+  const topic = (head && head[1].trim()) || SLIDES[i].section || '';
+  btn.dataset.lec = best.name;
+  btn.textContent = `今週：第${best.name.split('-')[1]}回`;
+  btn.title = `第${best.name.split('-')[1]}回 ${topic} の最初のスライドへ（${best.d.getMonth() + 1}/${best.d.getDate()} 公開）`;
+  btn.style.display = '';
+}
 
 // 授業回（data-lecture）の最初のスライドへ移動（授業予定のリンク用）
 function goLecture(lec) {
