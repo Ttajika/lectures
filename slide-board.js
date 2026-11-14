@@ -124,18 +124,51 @@
   const hasAnyBoard = () => board.topics.length > 0 || Object.values(board.slides).some(d => d.strokes.length);
   const saveAuthor = () => { if (AUTHOR) ls.set(keyAuthor(), JSON.stringify(board)); };
 
+  // 作成モードでは push 済み（board/<deck>.board.json）を正本として優先する。
+  // このブラウザの作成データに push 済みとの違い（追加・削除した記録，追加・消去した線）があるときだけ，
+  // どちらを使うか確認する（push し忘れ・push 前の連続録音に気づけるように）。
+  const topicKey = tp => tp.audio || `${tp.startSlide}|${tp.name}|${tp.duration}`;
+  function boardDiff(local, pub) {
+    const pk = new Set((pub.topics || []).map(topicKey)), lk = new Set((local.topics || []).map(topicKey));
+    const added = (local.topics || []).filter(tp => !pk.has(topicKey(tp))).map(tp => tp.name);
+    const removed = (pub.topics || []).filter(tp => !lk.has(topicKey(tp))).map(tp => tp.name);
+    const ids = b => new Set(Object.values(b.slides || {}).flatMap(d => (d.strokes || []).map(st => st.id)));
+    const ers = b => new Set(Object.entries(b.slides || {}).flatMap(([id, d]) => (d.erases || []).map(e => id + '|' + e.t0)));
+    const pIds = ids(pub), pErs = ers(pub);
+    const strokes = [...ids(local)].filter(x => !pIds.has(x)).length;
+    const erases = [...ers(local)].filter(x => !pErs.has(x)).length;
+    return { added, removed, strokes, erases, any: added.length + removed.length + strokes + erases > 0 };
+  }
   async function loadBoard() {
-    if (AUTHOR) {
-      try { const b = JSON.parse(ls.get(keyAuthor()) || 'null'); if (validBoard(b)) return [b, 'このブラウザの作成データ']; } catch (e) {}
-    }
     const url = A.boardUrl || `board/${A.deck}.board.json`;
+    let pub = null, local = null;
     try {
       const r = await fetch(url, { cache: 'no-cache' });
-      if (r.ok) { const b = await r.json(); if (validBoard(b)) return [b, url]; }
+      if (r.ok) { const b = await r.json(); if (validBoard(b)) pub = b; }
     } catch (e) {}
-    if (!AUTHOR) {   // 同じブラウザで作成モードを使った場合の確認用
-      try { const b = JSON.parse(ls.get(keyAuthor()) || 'null'); if (validBoard(b)) return [b, 'このブラウザの作成データ']; } catch (e) {}
+    try { const b = JSON.parse(ls.get(keyAuthor()) || 'null'); if (validBoard(b)) local = b; } catch (e) {}
+    if (AUTHOR) {
+      if (local && pub) {
+        const d = boardDiff(local, pub);
+        if (d.any) {
+          const lines = [];
+          if (d.added.length) lines.push(`・まだ push していない記録：${d.added.join('，')}`);
+          if (d.removed.length) lines.push(`・このブラウザで削除した記録：${d.removed.join('，')}`);
+          if (d.strokes) lines.push(`・push 済みにない線：${d.strokes} 本`);
+          if (d.erases) lines.push(`・このブラウザでの消去：${d.erases} 件`);
+          const useLocal = confirm('このブラウザの作成データが push 済みのものと違います。\n' + lines.join('\n') +
+            '\n\nOK：このブラウザの作成データを使う（続けて録るとき）\nキャンセル：push 済みを使う（やり直すとき。このブラウザの作成データは置き換わります）');
+          if (useLocal) return [local, 'このブラウザの作成データ'];
+        }
+        ls.set(keyAuthor(), JSON.stringify(pub));   // 以後は push 済みを元に作る
+        return [pub, url];
+      }
+      if (pub) return [pub, url];
+      if (local) return [local, 'このブラウザの作成データ（push 済みが読めませんでした）'];
+      return [emptyBoard(), ''];
     }
+    if (pub) return [pub, url];
+    if (local) return [local, 'このブラウザの作成データ'];   // 同じブラウザで作成モードを使った場合の確認用
     return [emptyBoard(), ''];
   }
 
