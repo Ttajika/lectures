@@ -2434,6 +2434,13 @@ function updateThisWeek() {
   btn.style.display = '';
 }
 
+// タイトルでスライドへ移動（前の回を参照するリンク用。href には ?lecture= を書いておく）
+function goSlideTitle(title) {
+  const i = SLIDES.findIndex(s => s.title === title);
+  if (i >= 0) showSlide(i);
+  return false;
+}
+
 // 授業回（data-lecture）の最初のスライドへ移動（授業予定のリンク用）
 function goLecture(lec) {
   const i = SLIDES.findIndex(s => s.lecture === lec);
@@ -3681,6 +3688,7 @@ $$\text{需要の価格弾力性}= -\frac{\text{需要量の変化率}}{\text{�
 <div class="columns">
 <div class="column">
 <ul>
+<li>社会的総余剰＝消費者余剰＋生産者余剰</li>
 <li>課税下では税収も社会的総余剰に含まれる</li>
 <li class="sub-item">なぜ？</li>
 </ul>
@@ -4254,7 +4262,7 @@ $$\text{需要の価格弾力性}= -\frac{\text{需要量の変化率}}{\text{�
 
 <template class="slide-data" data-title="パレート効率性との関係" data-section="ゲーム理論" data-note="false" data-print-margin="0">
 <ul>
-<li>戦略の組み合わせを「状態」と見て，パレート効率性を当てはめられる</li>
+<li>戦略の組み合わせを「状態」と見て，パレート効率性（<a class="lec-link" href="?lecture=1-5" onclick="return goSlideTitle('余剰について')">第5回を参照</a>）を当てはめられる</li>
 <li class="sub-item">最初の利得表では（協力する，協力する）$=(5,5)$ はパレート効率的</li>
 <li class="sub-item">（しない，しない）$=(4,1)$ はそうでない</li>
 <li><span class="keyword">ナッシュ均衡はパレート効率的とは限らない</span></li>
@@ -5274,7 +5282,7 @@ $$q_{Ly}+q_{Ky}=e_{Ly}+e_{Ky}$$
 <li class="sub-item">損益分岐点での価格は</li>
 <li class="spacer"></li>
 <li class="spacer"></li>
-<li>利潤最大化条件を使うと...</li>
+<li>利潤最大化条件（<a class="lec-link" href="?lecture=2-8" onclick="return goSlideTitle('利潤最大化の一階条件')">第8回を参照</a>）を使うと...</li>
 <li class="spacer"></li>
 <li class="spacer"></li>
 <li class="spacer"></li>
