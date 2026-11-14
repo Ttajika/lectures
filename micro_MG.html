@@ -362,6 +362,10 @@ body.print-mode .tikz-figure { cursor:default; }
 a.lec-link { color:inherit; text-decoration:underline; text-decoration-color:var(--accent); text-underline-offset:3px; }
 a.lec-link:hover { color:var(--accent); }
 body.print-mode a.lec-link { text-decoration:none; }
+.lec-links { display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin:28px 0 48px; padding-top:16px; border-top:1px dashed var(--border); } /* 下の余白：左下に浮く再生ボタンと重ならないように */
+.lec-links span { font-size:14px; color:var(--text-dim); margin-right:4px; }
+.lec-link-btn { display:inline-block; padding:8px 16px; border-radius:8px; background:var(--accent); color:#fff !important; text-decoration:none; font-weight:700; font-size:15px; }
+.lec-link-btn:hover { filter:brightness(1.1); }
 .lec-date { font-size:0.8em; color:var(--text-dim); margin-left:0.8em; white-space:nowrap; }
 .lec-date:empty { display:none; }
 .slide-content.is-divider .divider-eyebrow .lec-date { font-size:14px; color:rgba(255,255,255,0.75); margin-left:-4px; align-self:center; }
@@ -1572,6 +1576,7 @@ function renderSlide(idx) {
   setupPhantoms(el);
   setupAnimFigures(el);
   fillLecDates(el);
+  renderLecLinks(el, idx);
   setupLinks(el);
 }
 
@@ -2387,7 +2392,26 @@ function fillLecDates(root) {
     el.textContent = `公開予定日：${d.getMonth() + 1}/${d.getDate()}（${WEEKDAY[d.getDay()]}）${hm}`;
   });
 }
-document.addEventListener('slideboard:schedule', () => { fillLecDates(document); updateThisWeek(); });
+document.addEventListener('slideboard:schedule', () => { fillLecDates(document); updateThisWeek(); renderLecLinks(document.getElementById('slideContent'), current); });
+
+// 小テスト・練習問題へのボタン：日程 CSV の列「小テスト」「練習問題」に URL がある回だけ，
+// その回の最後のスライドの下に出す（公開日を過ぎた回のみ。印刷しない）
+function renderLecLinks(el, idx) {
+  if (!el || mode !== 'slide') return;
+  el.querySelectorAll('.lec-links').forEach(e => e.remove());
+  const s = SLIDES[idx], sched = window.SlideBoard && SlideBoard.schedule;
+  if (!s || !s.lecture || !sched || !sched.links) return;
+  const next = SLIDES[idx + 1];
+  if (next && next.lecture === s.lecture) return;   // その回の最後のスライドだけ
+  const ln = sched.links.get(s.lecture), d = sched.get(s.lecture);
+  if (!ln || !d || d > new Date()) return;
+  const n = s.lecture.split('-')[1];
+  const a = (url, label) => url ? `<a class="lec-link-btn" href="${url}" target="_blank" rel="noopener">${label}</a>` : '';
+  const box = document.createElement('div');
+  box.className = 'lec-links';
+  box.innerHTML = `<span>第${n}回はここまで</span>` + a(ln.quiz, `▶ 第${n}回の小テスト`) + a(ln.practice, `▶ 第${n}回の練習問題`);
+  el.appendChild(box);
+}
 
 // 「今週：第N回」ボタン：公開日を過ぎた回のうちいちばん新しい回。公開から 14 日を過ぎたら出さない
 function updateThisWeek() {

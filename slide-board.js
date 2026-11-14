@@ -40,6 +40,8 @@
      ・CSV が無ければ従来どおりすべて公開。作成モード（?author=1）では常にすべて表示
      ・公開前のトピックで使う線は、そのトピックが公開されるまで隠す
      ・ブラウザ側で隠すだけなので、JSON や音声ファイルを直接開けば見られる点に注意
+     ・列「小テスト」「練習問題」に URL を書くと SlideBoard.schedule.links（Map：名前 → {quiz, practice}）に入る
+       （ページ側で各回の最後のスライドにボタンを出すのに使う）
      ・読み込んだ日程は SlideBoard.schedule（Map）に入り、document に 'slideboard:schedule' イベントを出す
        （ページ側で公開予定日を表示するのに使う）
 
@@ -162,11 +164,23 @@
       const r = await fetch(url, { cache: 'no-cache' });
       if (!r.ok) return null;
       const map = new Map();   // 名前 → 公開日時（同じ名前が複数あれば早い方）
-      parseCSV(await r.text()).forEach(([d, name]) => {
+      const links = new Map(); // 名前 → { quiz, practice }（列「小テスト」「練習問題」の URL）
+      let col = { quiz: 3, practice: 4 };   // 見出し行が無ければ 4・5 列目
+      parseCSV(await r.text()).forEach(row => {
+        const [d, name] = row;
+        if (!parseWhen(d || '') && row.some(c => /小テスト|練習問題/.test(c))) {   // 見出し行
+          col = { quiz: row.findIndex(c => /小テスト/.test(c)), practice: row.findIndex(c => /練習問題/.test(c)) };
+          return;
+        }
+        if (!name) return;
+        const quiz = col.quiz >= 0 ? (row[col.quiz] || '') : '', practice = col.practice >= 0 ? (row[col.practice] || '') : '';
+        if (/^https?:\/\//.test(quiz) || /^https?:\/\//.test(practice))
+          links.set(name, { quiz: /^https?:\/\//.test(quiz) ? quiz : '', practice: /^https?:\/\//.test(practice) ? practice : '' });
         const when = parseWhen(d || '');
-        if (!when || !name) return;
+        if (!when) return;
         if (!map.has(name) || when < map.get(name)) map.set(name, when);
       });
+      map.links = links;
       return map;
     } catch (e) { return null; }
   }
