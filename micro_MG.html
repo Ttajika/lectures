@@ -69,7 +69,16 @@ window.MathJax = {
   --tikz-bg: #f0fdf4;
   --tikz-border: #86efac;
   --header-bg: #1e293b;
+  --accent-soft: #93c5fd;   /* 扉の章番号など，紺地の上の差し色 */
   --title: #0f172a;
+}
+/* パートごとの色（showSlide が <html data-part-idx> を付ける）
+   ミクロ1 = 青（既定），ミクロ2 = 緑，オリエンテーション = その中間の青緑 */
+html[data-part-idx="0"] {
+  --accent:#0e7490; --accent-light:#ecfeff; --header-bg:#0f3d48; --accent-soft:#67e8f9;
+}
+html[data-part-idx="2"] {
+  --accent:#047857; --accent-light:#ecfdf5; --header-bg:#153a30; --accent-soft:#6ee7b7;
 }
 
 body {
@@ -335,9 +344,25 @@ body.print-mode .tikz-figure { cursor:default; }
   font-size:15px; color:rgba(255,255,255,0.65); letter-spacing:0.08em;
 }
 .slide-content.is-divider .divider-eyebrow .num {
-  font-size:15px; font-weight:700; color:#93c5fd;
-  padding-bottom:4px; border-bottom:2px solid #93c5fd;
+  font-size:15px; font-weight:700; color:var(--accent-soft);
+  padding-bottom:4px; border-bottom:2px solid var(--accent-soft);
 }
+.slide-content.is-divider .divider-eyebrow .lec {
+  font-size:14px; font-weight:700; color:var(--header-bg); background:var(--accent-soft);
+  padding:2px 10px; border-radius:4px; letter-spacing:0.04em; align-self:center;
+}
+.slide-content.is-divider .divider-link { margin-top:28px; font-size:16px; }
+.slide-content.is-divider .divider-link a {
+  color:#fff; text-decoration:none; padding:8px 16px; border-radius:8px;
+  border:1.5px solid var(--accent-soft); display:inline-block;
+}
+.slide-content.is-divider .divider-link a:hover { background:rgba(255,255,255,0.1); }
+a.lec-link { color:inherit; text-decoration:underline; text-decoration-color:var(--accent); text-underline-offset:3px; }
+a.lec-link:hover { color:var(--accent); }
+body.print-mode a.lec-link { text-decoration:none; }
+.lec-date { font-size:0.8em; color:var(--text-dim); margin-left:0.8em; white-space:nowrap; }
+.lec-date:empty { display:none; }
+.slide-content.is-divider .divider-eyebrow .lec-date { font-size:14px; color:rgba(255,255,255,0.75); margin-left:-4px; align-self:center; }
 .slide-content.is-divider .cover-sub { font-size:18px; color:rgba(255,255,255,0.7); margin-top:14px; }
 .slide-content.is-divider .cover-author { font-size:16px; color:#fff; margin-top:40px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.2); display:inline-block; }
 .slide-content.is-divider .bookmark-btn { color:#fff; }
@@ -642,8 +667,64 @@ body.print-mode .mode-toggle { bottom:12px; }
 .filter-chip.active { background:var(--accent); color:#fff; border-color:var(--accent); }
 .filter-count { color:var(--text-dim); margin-left:auto; font-size:11px; }
 
+/* ═══ 使い方ツアー ═══ */
+.tour-spot {
+  position:fixed; z-index:20000; border-radius:8px; pointer-events:none;
+  box-shadow:0 0 0 3px #fbbf24, 0 0 0 9999px rgba(15,23,42,0.6);
+}
+.tour-spot.center { width:0 !important; height:0 !important; box-shadow:0 0 0 9999px rgba(15,23,42,0.6); }
+.tour-card {
+  position:fixed; z-index:20001; width:min(360px, calc(100vw - 32px));
+  background:#fff; color:var(--text); border-radius:10px; padding:14px 16px 12px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.3); font-size:14px; line-height:1.7;
+}
+.tour-card h4 { margin:0 0 6px; font-size:15px; color:var(--title); }
+.tour-card p { margin:0; }
+.tour-card kbd { background:#e5e7eb; color:var(--text); border-color:#d1d5db; }
+.tour-card .tour-nav { display:flex; align-items:center; gap:8px; margin-top:12px; }
+.tour-card .tour-count { font-size:12px; color:var(--text-dim); margin-right:auto; }
+.tour-card button {
+  font:inherit; font-size:13px; padding:5px 12px; border-radius:6px; cursor:pointer;
+  border:1px solid var(--border); background:#fff; color:var(--text);
+}
+.tour-card button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+.tour-start {
+  font:inherit; font-size:16px; font-weight:700; padding:10px 20px; border-radius:10px; cursor:pointer;
+  border:none; background:var(--accent); color:#fff; box-shadow:0 3px 10px rgba(0,0,0,0.2);
+}
+body.print-mode .tour-start { display:none; }
+
+/* ═══ SEARCH ═══ */
+.search-bar {
+  display:none; position:relative; align-items:center; gap:8px; padding:6px 16px;
+  background:#f1f5f9; border-bottom:1px solid var(--border); flex-shrink:0; font-size:12px;
+}
+.search-bar.show { display:flex; }
+.search-bar input {
+  flex:1; max-width:420px; padding:5px 10px; border:1px solid var(--border); border-radius:6px;
+  font-size:14px; font-family:inherit; background:#fff;
+}
+.search-bar input:focus { outline:2px solid var(--accent); outline-offset:-1px; }
+.search-count { color:var(--text-dim); font-size:11px; }
+.search-results {
+  display:none; position:absolute; left:16px; top:100%; z-index:300; width:min(560px, calc(100vw - 32px));
+  max-height:60vh; overflow-y:auto; background:#fff; border:1px solid var(--border);
+  border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,0.12);
+}
+.search-results.show { display:block; }
+.search-item { padding:7px 12px; cursor:pointer; border-bottom:1px solid #f1f5f9; line-height:1.45; }
+.search-item:last-child { border-bottom:none; }
+.search-item:hover, .search-item.sel { background:var(--accent-light); }
+.search-item .si-head { font-size:13px; font-weight:600; }
+.search-item .si-num { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--text-dim); margin-right:6px; }
+.search-item .si-sec { font-size:11px; color:var(--text-dim); font-weight:400; margin-left:6px; }
+.search-item .si-snip { font-size:12px; color:#475569; margin-top:2px; }
+.search-item mark { background:#fde68a; color:inherit; padding:0 1px; border-radius:2px; }
+.search-empty { padding:10px 12px; color:var(--text-dim); font-size:12px; }
+
 /* hide in print */
 body.print-mode .bookmark-btn,
+body.print-mode .search-bar,
 body.print-mode .filter-bar { display:none !important; }
 
 /* ═══ GEOGEBRA EMBED ═══ */
@@ -727,6 +808,7 @@ body.print-mode .fab-pen { display: none !important; }
   <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
   <symbol id="i-plus" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></symbol>
   <symbol id="i-filter" viewBox="0 0 24 24"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></symbol>
   <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></symbol>
   <symbol id="i-key" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></symbol>
   <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></symbol>
@@ -754,19 +836,24 @@ body.print-mode .fab-pen { display: none !important; }
     <span class="nav-sep sp-hide"></span>
     <button class="nav-btn" onclick="toggleNotes()" title="メモ欄 (N)"><svg class="ic"><use href="#i-note"/></svg></button>
     <button class="nav-btn" id="drawToggleBtn" onclick="toggleDraw()" title="書き込みモード (D)"><svg class="ic"><use href="#i-pen"/></svg></button>
-    <span class="nav-sep sp-hide"></span>
-    <button class="nav-btn sp-hide" onclick="clearLocal()" title="メモ・手書きの保存データをすべて消去"><svg class="ic"><use href="#i-trash"/></svg></button>
-    <button class="nav-btn sp-hide" onclick="exportData()" title="学習データを書き出し"><svg class="ic"><use href="#i-download"/></svg></button>
-    <button class="nav-btn sp-hide" onclick="document.getElementById('importFile').click()" title="学習データを読み込み"><svg class="ic"><use href="#i-upload"/></svg></button>
-    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+    <!-- 保存データの消去ボタンは URL に ?delete=1 を付けたときだけ表示 -->
+    <button class="nav-btn" id="clearLocalBtn" onclick="clearLocal()" title="メモ・手書きの保存データをすべて消去" style="display:none"><svg class="ic"><use href="#i-trash"/></svg></button>
     <span class="nav-sep sp-hide"></span>
     <button class="nav-btn sp-hide" onclick="zoomStep(-1)" title="スライドを縮小 (−)"><svg class="ic"><use href="#i-minus"/></svg></button>
     <button class="nav-btn sp-hide" id="zoomInfo" onclick="zoomReset()" title="等倍に戻す (0)" style="font-size:11px;min-width:44px;font-family:'JetBrains Mono',monospace">100%</button>
     <button class="nav-btn sp-hide" onclick="zoomStep(1)" title="スライドを拡大 (+)"><svg class="ic"><use href="#i-plus"/></svg></button>
     <span class="nav-sep sp-hide"></span>
+    <button class="nav-btn" onclick="toggleSearch()" title="キーワード検索 (/)"><svg class="ic"><use href="#i-search"/></svg></button>
     <button class="nav-btn" onclick="toggleFilter()" title="フィルタ表示"><svg class="ic"><use href="#i-filter"/></svg></button>
-    <button class="nav-btn sp-hide" onclick="toggleHints()" title="キーボード操作"><svg class="ic"><use href="#i-help"/></svg></button>
+    <button class="nav-btn" onclick="toggleHints()" title="使い方"><svg class="ic"><use href="#i-help"/></svg></button>
   </div>
+</div>
+
+<!-- Search bar -->
+<div class="search-bar" id="searchBar">
+  <input type="search" id="searchInput" placeholder="キーワードで検索（例：弾力性，ナッシュ均衡）" autocomplete="off">
+  <span class="search-count" id="searchCount"></span>
+  <div class="search-results" id="searchResults"></div>
 </div>
 
 <!-- Filter bar -->
@@ -831,6 +918,7 @@ body.print-mode .fab-pen { display: none !important; }
   <kbd>B</kbd> 板書スペース &nbsp;
   <kbd>N</kbd> メモ欄 &nbsp;
   <kbd>R</kbd> 空欄を表示 &nbsp;
+  <kbd>/</kbd> キーワード検索 &nbsp;
   <kbd>+</kbd><kbd>-</kbd><kbd>0</kbd> スライドの拡大/縮小/等倍 &nbsp;
   <kbd>Ctrl+Z</kbd> 取り消し
 </div>
@@ -875,6 +963,12 @@ body.print-mode .fab-pen { display: none !important; }
 let SLIDES = [];
 let SECTIONS = [];
 let PARTS = [];
+// バーのタイトル（パートごと。'' はそれ以外＝オリエンテーション）
+const PART_TITLES = {
+  '': '初級ミクロ経済学 — 2027年度',
+  '初級ミクロ経済学1': '初級ミクロ経済学1 — 2027年度',
+  '初級ミクロ経済学2': '初級ミクロ経済学2 — 2027年度',
+};
 
 let current = 0;
 let notes = {};
@@ -911,18 +1005,16 @@ function loadLocal() {
   } catch(e) { /* parse error */ }
 }
 
+// 保存データの消去（?delete=1 のときだけボタンを出す）
 function clearLocal() {
-  if (confirm('保存されたメモ・手書きデータをすべて削除しますか？\n\n※ この操作は取り消せません。\n残したい内容があれば先に「💾」で書き出してください。')) {
-    localStorage.removeItem(STORAGE_KEY);
-    notes = {};
-    strokes = {};
-    boardStrokes = {};
-    understanding = {};
-    bookmarks = {};
-    document.getElementById('noteArea').value = '';
-    redrawStrokes();
-    showSlide(current);
-  }
+  const msg = '保存されたメモ・手書き・ブックマークをすべて削除しますか？\n\n※ この操作は取り消せません。'
+    + (window.SlideSync ? '\n※ ログインしている場合は、クラウドに保存した内容も消え、ほかの端末でも消えます。' : '');
+  if (!confirm(msg)) return;
+  notes = {}; strokes = {}; boardStrokes = {}; understanding = {}; bookmarks = {};
+  document.getElementById('noteArea').value = '';
+  saveLocal();   // 空の状態を保存（ログイン中はクラウドにも反映）
+  redrawStrokes();
+  showSlide(current);
 }
 
 // Auto-save periodically
@@ -1457,12 +1549,15 @@ function renderSlide(idx) {
   // Bookmark button
   const isBM = bookmarks[idx];
   html += `<button class="bookmark-btn${isBM ? ' active' : ''}" onclick="toggleBookmark(${idx})" title="ブックマーク"><svg class="ic"><use href="#i-star"/></svg></button>`;
-  if (isDivider && s.section) {
+  // 授業回（data-lecture）の最初の扉には「第N回」を添える
+  const lecStart = s.lecture && (idx === 0 || SLIDES[idx - 1].lecture !== s.lecture);
+  if (isDivider && (s.section || lecStart)) {
     const ch = chapterInfo(idx);
     const isChapterHead = SECTIONS.some(x => x.slide === idx);
+    const lec = lecStart ? `<span class="lec">第${s.lecture.split('-').pop()}回</span><span class="lec-date" data-lec="${s.lecture}"></span>` : '';
     const num = ch.num ? `<span class="num">第${ch.num}章</span>` : '';
-    const name = isChapterHead ? '' : `<span>${s.section}</span>`;
-    if (num || name) html += `<div class="divider-eyebrow">${num}${name}</div>`;
+    const name = (isChapterHead || !s.section) ? '' : `<span>${s.section}</span>`;
+    if (lec || num || name) html += `<div class="divider-eyebrow">${lec}${num}${name}</div>`;
   }
   if (s.section) {
     html += `<div class="section-badge">${s.part ? `<span class="part-label">${s.part}</span> › ` : ''}${s.section}</div>`;
@@ -1479,6 +1574,7 @@ function renderSlide(idx) {
   renderMath(el);
   setupPhantoms(el);
   setupAnimFigures(el);
+  fillLecDates(el);
   setupLinks(el);
 }
 
@@ -1515,6 +1611,8 @@ function showSlide(idx) {
   notes[current] = document.getElementById('noteArea').value;
   scheduleSave();
   current = idx;
+  // パートごとの色分け（CSS の html[data-part-idx]）
+  document.documentElement.dataset.partIdx = PARTS.findIndex(p => p.title === SLIDES[idx].part);
   // Update URL hash without triggering hashchange
   history.replaceState(null, '', '#' + (idx + 1));
   renderSlide(idx);
@@ -1529,11 +1627,15 @@ function showSlide(idx) {
   document.getElementById('noteSlideNum').textContent = idx+1;
   document.getElementById('noteArea').value = notes[idx] || '';
   // Update section select
+  // セクションのないスライド（表紙・パートの表紙）では「— 目次 —」に戻す（直前の章を出さない）
   let secIdx = '';
-  for (let i = SECTIONS.length-1; i >= 0; i--) {
+  if (SLIDES[idx].section) for (let i = SECTIONS.length-1; i >= 0; i--) {
     if (idx >= SECTIONS[i].slide) { secIdx = SECTIONS[i].slide; break; }
   }
   sel.value = secIdx;
+  // バーのタイトルもパートに合わせる（オリエンテーションは共通のタイトル）
+  const tb = document.querySelector('.topbar-title');
+  if (tb) tb.textContent = PART_TITLES[SLIDES[idx].part] || PART_TITLES[''];
   // Scroll to top
   document.getElementById('slideArea').scrollTop = 0;
   // Redraw canvas for this slide
@@ -1563,6 +1665,7 @@ function toggleNotes() {
   document.getElementById('notesPanel').classList.toggle('collapsed');
 }
 function toggleHints() {
+  if (mode === 'slide') { startTour(); return; }
   document.getElementById('hints').classList.toggle('show');
 }
 function clearNote() {
@@ -1839,7 +1942,7 @@ function togglePageBreak() {
 const PRINT_FILTERS = {
   all:    { label: '全体',            heading: '初級ミクロ経済学 — 2027年度版',  parts: null },
   micro1: { label: '初級ミクロ経済学1', heading: '初級ミクロ経済学1 — 2027年度版', parts: ['オリエンテーション', '初級ミクロ経済学1'] },
-  micro2: { label: '初級ミクロ経済学2', heading: '初級ミクロ経済学2 — 2027年度版', parts: ['初級ミクロ経済学2'] },
+  micro2: { label: '初級ミクロ経済学2', heading: '初級ミクロ経済学2 — 2027年度版', parts: ['オリエンテーション', '初級ミクロ経済学2'] },
 };
 let printFilter = 'all';
 
@@ -1862,7 +1965,7 @@ function enterPrintMode() {
   let firstPartHead = true;
   SLIDES.forEach((s, i) => {
     // Skip Note frames and title slide (first slide) in print mode
-    if (s.is_note) return;
+    if (s.is_note || s.printHide) return;
     if (i === 0) return;
     if (pf.parts && !pf.parts.includes(s.part)) return;
     // パートの表紙（「初級ミクロ経済学1」など）は見出し帯と重複するので印刷しない
@@ -1893,6 +1996,7 @@ function enterPrintMode() {
   });
 
   area.innerHTML = html;
+  fillLecDates(area);
 
   // Make SVG glyph/clip IDs unique to avoid clashes when all slides are in the DOM
   area.querySelectorAll('.print-slide').forEach((slide, idx) => {
@@ -1964,6 +2068,7 @@ document.addEventListener('keydown', e => {
   else if (e.key === 'b' || e.key === 'B') { if (drawMode || boardMode) toggleBoard(); }
   else if (e.key === 'n' || e.key === 'N') toggleNotes();
   else if (e.key === 'r' || e.key === 'R') revealAllPhantoms();
+  else if (e.key === '/') { e.preventDefault(); openSearch(); }
   else if (e.key === '+' || e.key === '=') { e.preventDefault(); zoomStep(1); }
   else if (e.key === '-') { e.preventDefault(); zoomStep(-1); }
   else if (e.key === '0') { e.preventDefault(); zoomReset(); }
@@ -2069,118 +2174,226 @@ function prevFiltered() {
   else showSlide(filteredIndices[filteredIndices.length - 1]); // wrap
 }
 
-// ═══ EXPORT / IMPORT ═══
-function exportData() {
-  notes[current] = document.getElementById('noteArea').value;
-  const canvas = getCanvas();
-  const cw = canvas ? canvas.width : 1;
-  const ch = canvas ? canvas.height : 1;
-
-  const normalizeStrokes = (src) => {
-    const out = {};
-    for (const [k, arr] of Object.entries(src || {})) {
-      out[k] = arr.map(s => ({
-        ...s,
-        points: s.points.map(p => ({ x: p.x / cw, y: p.y / ch }))
-      }));
-    }
-    return out;
-  };
-
-  const data = {
-    version: 1,
-    title: document.querySelector('.topbar-title')?.textContent || '',
-    exportDate: new Date().toISOString(),
-    slideCount: SLIDES.length,
-    canvasSize: { w: cw, h: ch },
-    notes,
-    understanding,
-    bookmarks,
-    strokes: normalizeStrokes(strokes),
-    boardStrokes: normalizeStrokes(boardStrokes),
-    lastSlide: current,
-  };
-
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  const dateStr = new Date().toISOString().slice(0, 10);
-  a.download = `micro_econ_study_${dateStr}.json`;
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-
-function importData(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const data = JSON.parse(e.target.result);
-      if (!data.version) { alert('形式が不正です'); return; }
-
-      const merge = confirm(
-        '読み込みモードを選んでください:\n\n' +
-        '「OK」→ 既存データに上書き（マージ）\n' +
-        '「キャンセル」→ 読み込み中止'
-      );
-      if (!merge) return;
-
-      const canvas = getCanvas();
-      const cw = canvas ? canvas.width : (data.canvasSize?.w || 1);
-      const ch = canvas ? canvas.height : (data.canvasSize?.h || 1);
-
-      const denormalizeStrokes = (src) => {
-        const out = {};
-        for (const [k, arr] of Object.entries(src || {})) {
-          out[k] = arr.map(s => ({
-            ...s,
-            points: s.points.map(p => ({
-              x: p.x <= 1.5 ? p.x * cw : p.x,
-              y: p.y <= 1.5 ? p.y * ch : p.y,
-            }))
-          }));
-        }
-        return out;
-      };
-
-      if (data.notes) Object.assign(notes, data.notes);
-      if (data.understanding) Object.assign(understanding, data.understanding);
-      if (data.bookmarks) Object.assign(bookmarks, data.bookmarks);
-      if (data.strokes) {
-        const dn = denormalizeStrokes(data.strokes);
-        Object.assign(strokes, dn);
-      }
-      if (data.boardStrokes) {
-        const dn = denormalizeStrokes(data.boardStrokes);
-        Object.assign(boardStrokes, dn);
-      }
-
-      saveLocal();
-      showSlide(current);
-      alert('読み込み完了しました (' + (data.exportDate || '') + ')');
-    } catch(err) {
-      alert('読み込みエラー: ' + err.message);
-    }
-  };
-  reader.readAsText(file);
-  event.target.value = ''; // reset file input
-}
-
-// Export notes as Markdown
-function exportNotes() {
-  notes[current] = document.getElementById('noteArea').value;
-  let text = '# 初級ミクロ経済学 メモ\n\n';
-  for (let i = 0; i < SLIDES.length; i++) {
-    if (notes[i] && notes[i].trim()) {
-      text += `## スライド ${i+1}: ${SLIDES[i].title || ''}\n${notes[i]}\n\n`;
-    }
+// ═══ 使い方ツアー ═══
+// ボタンを 1 つずつ照らして説明する。対象が画面にない（スマホで隠れている，データがなく出ていない）
+// ときは中央にカードだけを出す。説明文は TOUR_STEPS（デッキごとに書き換える）
+const TOUR_STEPS = [
+  { title: 'スライドの使い方', body: 'ボタンを順番に説明します．<kbd>→</kbd> か「次へ」で進みます．' },
+  { sel: '#sectionSelect', title: '目次', body: '章を選ぶと，その章の最初のスライドに移ります．各回の最初のスライドへは「授業予定」のスライドからも移れます．' },
+  { sel: '[onclick="prevSlide()"]', title: 'スライドの移動', body: '前後のスライドへ．キーボードの <kbd>←</kbd><kbd>→</kbd>，スマホでは左右のスワイプでも移動できます．' },
+  { sel: '#sbTopics button', title: '講義を再生', body: '各回の最初のスライドに「▶ 第N回の講義を再生」が出ます．音声に合わせてスライドがめくれ，板書が書かれていきます．途中のスライドでは「このスライドから再生」になります．' },
+  { sel: '#sbShowBtn', title: '先生の板書', body: '👁 で先生の板書の表示・非表示を切り替えます．▶✍ はこのスライドの板書を書き順どおりに再生します（板書のあるスライドだけ）．' },
+  { sel: '[onclick="toggleSearch()"]', title: 'キーワード検索', body: 'スライドの本文を検索します（<kbd>/</kbd> キーでも開きます）．検索中は <kbd>←</kbd><kbd>→</kbd> で該当スライドだけを順に見られます．' },
+  { sel: '.slide-content .bookmark-btn', title: 'ブックマーク', body: '★ で大事なスライドに印をつけます．' },
+  { sel: '[onclick="toggleFilter()"]', title: '絞り込み', body: 'ブックマークしたスライドだけを表示します．' },
+  { sel: '#drawToggleBtn', title: '書き込み', body: 'スライドに直接書き込めます（iPad では Apple Pencil を使うと自動でオンになります）．ただし<b>ノートは配布PDFに取ってください</b>．Web版の書き込みは補助用です．' },
+  { sel: '[onclick="toggleNotes()"]', title: 'メモ欄', body: 'スライドごとにメモを書けます．' },
+  { sel: '#ssAuthBtn', title: 'ログイン（任意）', body: '書き込みやメモはこのブラウザに保存されます．ブラウザによっては消えることがあるので，残したい人や端末を替える人はログインしてください．' },
+  { title: '印刷', body: '1枚目のスライドの右下にある「印刷用表示」から，書き込み欄つきの配布用ページを開けます（PDFはLMSでも配布します）．' },
+  { sel: '[onclick="toggleHints()"]', title: 'この説明', body: 'この説明は右上の「?」からいつでも見られます．<br>キー操作：' + '<kbd>←</kbd><kbd>→</kbd> 移動，<kbd>/</kbd> 検索，<kbd>D</kbd> 書き込み（<kbd>P</kbd> ペン・<kbd>H</kbd> 蛍光ペン・<kbd>E</kbd> 消しゴム），<kbd>N</kbd> メモ，<kbd>R</kbd> 空欄をすべて表示，<kbd>+</kbd><kbd>-</kbd><kbd>0</kbd> 拡大・縮小' },
+];
+let tourIdx = -1, tourEls = null;
+function tourTarget(sel) {
+  if (!sel) return null;
+  for (const el of document.querySelectorAll(sel)) {
+    const r = el.getBoundingClientRect();
+    if (r.width > 0 && r.height > 0 && getComputedStyle(el).visibility !== 'hidden') return el;
   }
-  const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'micro_econ_notes.md';
-  a.click();
+  return null;
+}
+function startTour() {
+  if (mode !== 'slide') return;
+  if (drawMode) toggleDraw();
+  document.getElementById('hints').classList.remove('show');
+  if (!tourEls) {
+    const spot = document.createElement('div'); spot.className = 'tour-spot';
+    const card = document.createElement('div'); card.className = 'tour-card';
+    card.addEventListener('click', e => {
+      const a = e.target.dataset.act;
+      if (a === 'next') tourGo(tourIdx + 1); else if (a === 'prev') tourGo(tourIdx - 1); else if (a === 'end') endTour();
+    });
+    tourEls = { spot, card };
+  }
+  document.body.appendChild(tourEls.spot); document.body.appendChild(tourEls.card);
+  tourGo(0);
+}
+function endTour() {
+  tourIdx = -1;
+  if (tourEls) { tourEls.spot.remove(); tourEls.card.remove(); }
+}
+function tourGo(i) {
+  if (i < 0) return;
+  if (i >= TOUR_STEPS.length) { endTour(); return; }
+  tourIdx = i;
+  const st = TOUR_STEPS[i], { spot, card } = tourEls;
+  const el = tourTarget(st.sel);
+  const last = i === TOUR_STEPS.length - 1;
+  card.innerHTML = `<h4>${st.title}</h4><p>${st.body}</p>` +
+    `<div class="tour-nav"><span class="tour-count">${i + 1} / ${TOUR_STEPS.length}</span>` +
+    (i > 0 ? '<button data-act="prev">戻る</button>' : '<button data-act="end">閉じる</button>') +
+    `<button class="primary" data-act="${last ? 'end' : 'next'}">${last ? '終わる' : '次へ'}</button></div>`;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  const cw = card.offsetWidth, ch = card.offsetHeight;
+  if (el) {
+    const r = el.getBoundingClientRect(), pad = 4;
+    spot.classList.remove('center');
+    Object.assign(spot.style, { left: (r.left - pad) + 'px', top: (r.top - pad) + 'px', width: (r.width + pad * 2) + 'px', height: (r.height + pad * 2) + 'px' });
+    let top = r.bottom + 12;
+    if (top + ch > vh - 8) top = Math.max(8, r.top - ch - 12);
+    let left = Math.min(Math.max(8, r.left + r.width / 2 - cw / 2), vw - cw - 8);
+    Object.assign(card.style, { left: left + 'px', top: top + 'px' });
+  } else {
+    spot.classList.add('center');
+    Object.assign(spot.style, { left: (vw / 2) + 'px', top: (vh / 2) + 'px' });
+    Object.assign(card.style, { left: ((vw - cw) / 2) + 'px', top: Math.max(8, (vh - ch) / 2) + 'px' });
+  }
+}
+// ツアー中のキー操作（スライドを動かさない）
+document.addEventListener('keydown', e => {
+  if (tourIdx < 0) return;
+  if (e.key === 'ArrowRight' || e.key === 'Enter') tourGo(tourIdx + 1);
+  else if (e.key === 'ArrowLeft') tourGo(tourIdx - 1);
+  else if (e.key === 'Escape') endTour();
+  else return;
+  e.preventDefault(); e.stopImmediatePropagation();
+}, true);
+window.addEventListener('resize', () => { if (tourIdx >= 0) tourGo(tourIdx); });
+
+// ═══ SEARCH ═══
+// スライドは <template> 内にあるのでブラウザのページ内検索が効かない．本文テキストから自前で検索する．
+// 入力中は結果を一覧表示し，同時に一致スライドで絞り込む（←→ で一致スライドだけを順に移動）．
+let searchHits = [], searchSel = -1;
+const normSearch = t => t.normalize('NFKC').toLowerCase().replace(/\s+/g, '');
+function searchPlain(t) {
+  // 表示用：TeX の $ や \コマンドを軽く落とす
+  return t.replace(/\\([%&#_])/g, '$1').replace(/\\[a-zA-Z]+/g, '').replace(/[${}]/g, '').replace(/\s+/g, ' ');
+}
+function escSearch(t) { return t.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function toggleSearch() {
+  const bar = document.getElementById('searchBar');
+  if (bar.classList.contains('show')) closeSearch(); else openSearch();
+}
+function openSearch() {
+  if (mode !== 'slide') return;
+  document.getElementById('searchBar').classList.add('show');
+  const inp = document.getElementById('searchInput');
+  inp.focus(); inp.select();
+  if (inp.value) runSearch();
+}
+function closeSearch() {
+  document.getElementById('searchBar').classList.remove('show');
+  document.getElementById('searchResults').classList.remove('show');
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchCount').textContent = '';
+  searchHits = [];
+  if (activeFilter === 'search') { activeFilter = 'all'; filteredIndices = null; updateFilterCount(); showSlide(current); }
+}
+function runSearch() {
+  const raw = document.getElementById('searchInput').value;
+  const q = normSearch(raw);
+  const box = document.getElementById('searchResults');
+  const cnt = document.getElementById('searchCount');
+  if (!q) {
+    searchHits = []; box.classList.remove('show'); cnt.textContent = '';
+    if (activeFilter === 'search') { activeFilter = 'all'; filteredIndices = null; updateFilterCount(); showSlide(current); }
+    return;
+  }
+  if (!SLIDES[0].searchText) SLIDES.forEach(s => {
+    s.searchTitle = normSearch(s.title);
+    s.searchText = normSearch(s.text);
+    // 表示用（空白を残す）
+    const tp = document.createElement('template'); tp.innerHTML = s.html;
+    s.dispText = tp.content.textContent.normalize('NFKC').replace(/\s+/g, ' ').trim();
+  });
+  // 複数語はスペース区切りで AND 検索
+  const terms = raw.normalize('NFKC').toLowerCase().split(/\s+/).filter(Boolean);
+  searchHits = [];
+  SLIDES.forEach((s, i) => {
+    if (terms.every(t => s.searchTitle.includes(t) || s.searchText.includes(t))) searchHits.push(i);
+  });
+  // タイトル一致を先に
+  searchHits.sort((a, b) => (SLIDES[b].searchTitle.includes(terms[0]) - SLIDES[a].searchTitle.includes(terms[0])) || (a - b));
+  cnt.textContent = searchHits.length ? searchHits.length + ' 件' : '該当なし';
+  searchSel = searchHits.length ? 0 : -1;
+  // 絞り込み（←→ 用）はスライド順
+  activeFilter = 'search';
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  filteredIndices = searchHits.length ? [...searchHits].sort((a, b) => a - b) : null;
+  updateFilterCount();
+  const re = new RegExp(terms.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|'), 'gi');
+  const mark = t => escSearch(t).replace(new RegExp(re.source, 'gi'), m => '<mark>' + m + '</mark>');
+  box.innerHTML = searchHits.length ? searchHits.slice(0, 60).map((i, k) => {
+    const s = SLIDES[i];
+    const body = s.dispText;
+    const pos = body.toLowerCase().indexOf(terms[0]);
+    let snip = '';
+    if (pos >= 0) {
+      const a = Math.max(0, pos - 24), b = Math.min(body.length, pos + terms[0].length + 36);
+      snip = (a > 0 ? '…' : '') + body.slice(a, b) + (b < body.length ? '…' : '');
+    } else snip = body.slice(0, 60) + (body.length > 60 ? '…' : '');
+    return `<div class="search-item${k === 0 ? ' sel' : ''}" data-idx="${i}">` +
+      `<div class="si-head"><span class="si-num">${i + 1}</span>${mark(s.title || s.dispText.slice(0, 30) || '（無題）')}<span class="si-sec">${escSearch(s.section)}</span></div>` +
+      `<div class="si-snip">${mark(searchPlain(snip))}</div></div>`;
+  }).join('') + (searchHits.length > 60 ? `<div class="search-empty">ほか ${searchHits.length - 60} 件（語を増やして絞り込んでください）</div>` : '')
+    : '<div class="search-empty">該当するスライドはありません</div>';
+  box.classList.add('show');
+}
+function pickSearch(i) {
+  document.getElementById('searchResults').classList.remove('show');
+  document.getElementById('searchInput').blur();
+  showSlide(i);
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.getElementById('searchInput');
+  const box = document.getElementById('searchResults');
+  inp.addEventListener('input', runSearch);
+  inp.addEventListener('focus', () => { if (inp.value) box.classList.add('show'); });
+  inp.addEventListener('keydown', e => {
+    const items = box.querySelectorAll('.search-item');
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      if (!items.length) return;
+      e.preventDefault();
+      searchSel = (searchSel + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length;
+      items.forEach((it, k) => it.classList.toggle('sel', k === searchSel));
+      items[searchSel].scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (items[searchSel]) pickSearch(parseInt(items[searchSel].dataset.idx));
+    } else if (e.key === 'Escape') {
+      e.preventDefault(); e.stopPropagation();
+      if (box.classList.contains('show') && inp.value) { box.classList.remove('show'); inp.blur(); }
+      else closeSearch();
+    }
+  });
+  box.addEventListener('mousedown', e => {
+    const it = e.target.closest('.search-item');
+    if (it) { e.preventDefault(); pickSearch(parseInt(it.dataset.idx)); }
+  });
+  inp.addEventListener('blur', () => setTimeout(() => box.classList.remove('show'), 100));
+});
+
+// 学習データの JSON 書き出し・読み込みは廃止（端末間の引き継ぎは slide-sync.js のログイン同期で行う）
+
+// 公開予定日の表示：board/micro_MG.schedule.csv（slide-board.js が読む）から .lec-date[data-lec] を埋める
+// CSV に日付が無い回は TBA
+const WEEKDAY = ['日', '月', '火', '水', '木', '金', '土'];
+function fillLecDates(root) {
+  const sched = window.SlideBoard && SlideBoard.schedule;
+  (root || document).querySelectorAll('.lec-date[data-lec]').forEach(el => {
+    if (!sched) { el.textContent = ''; return; }   // 日程がまだ読めていない／CSV が無い
+    const d = sched.get(el.dataset.lec);
+    if (!d) { el.textContent = '公開予定日：TBA'; return; }
+    const hm = (d.getHours() || d.getMinutes()) ? ` ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}` : '';
+    el.textContent = `公開予定日：${d.getMonth() + 1}/${d.getDate()}（${WEEKDAY[d.getDay()]}）${hm}`;
+  });
+}
+document.addEventListener('slideboard:schedule', () => fillLecDates(document));
+
+// 授業回（data-lecture）の最初のスライドへ移動（授業予定のリンク用）
+function goLecture(lec) {
+  const i = SLIDES.findIndex(s => s.lecture === lec);
+  if (i >= 0) showSlide(i);
+  return false;
 }
 
 // URL-based page navigation: ?page=N or #N (1-based)
@@ -2191,6 +2404,9 @@ function getPageFromURL() {
   const hash = window.location.hash.replace('#', '');
   const hp = parseInt(hash);
   if (hp >= 1) return hp - 1;
+  // ?lecture=1-3 → その授業回（data-lecture）の最初のスライド。LMS に貼るリンク用（スライドを足してもずれない）
+  const lec = params.get('lecture');
+  if (lec) { const i = SLIDES.findIndex(s => s.lecture === lec); if (i >= 0) return i; }
   return null;
 }
 window.addEventListener('hashchange', () => {
@@ -2205,6 +2421,8 @@ document.addEventListener('DOMContentLoaded', () => {
     title: t.dataset.title || '',
     section: t.dataset.section || '',
     part: t.dataset.part || '',
+    lecture: t.dataset.lecture || '',
+    printHide: t.dataset.print === 'false',   // data-print="false"：印刷用表示に出さない（授業回の区切りなど）
     html: t.innerHTML,
     is_note: t.dataset.note === 'true',
     printMargin: parseInt(t.dataset.printMargin) || 80,
@@ -2224,6 +2442,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // data-part はそれを書いたスライド以降に引き継がれる（次の data-part まで）
   let carryPart = '';
   SLIDES.forEach(s => { if (s.part) carryPart = s.part; else s.part = carryPart; });
+  // data-lecture（授業回。板書・音声の公開日に使う）も同様に引き継ぐ
+  let carryLec = '';
+  SLIDES.forEach(s => { if (s.lecture) carryLec = s.lecture; else s.lecture = carryLec; });
   // Build parts / sections dynamically from slide data
   let lastSection = '', lastPart = '';
   SLIDES.forEach((s, i) => {
@@ -2259,6 +2480,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loadLocal();
   initZoom();
   // URL page specification: ?page=N or #N (1-based)
+  if (new URLSearchParams(location.search).get('delete') === '1') document.getElementById('clearLocalBtn').style.display = '';
   const urlPage = getPageFromURL();
   if (urlPage !== null) current = urlPage;
   // Wait for MathJax to load
@@ -2312,6 +2534,7 @@ document.addEventListener('DOMContentLoaded', () => {
         getSlideCount: () => SLIDES.length,
         getSlideId: (i) => SLIDES[i].id,
         getSections: () => SECTIONS,
+        getLecture: (i) => SLIDES[i].lecture,
       });
     } else {
       setTimeout(initWhenReady, 100);
@@ -2336,7 +2559,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <!-- ===== Slide 1: Title ===== -->
 <!-- data-part を書いたスライド以降、次の data-part が現れるまでが 1 つのパート -->
-<template class="slide-data" data-title="" data-section="" data-part="オリエンテーション" data-note="false" data-print-margin="0">
+<!-- data-lecture（授業回 1-3 = ミクロ1の第3回）も同様。板書・音声の公開日（board/micro_MG.schedule.csv）に使う -->
+<template class="slide-data" data-lecture="1-1" data-title="" data-section="" data-part="オリエンテーション" data-note="false" data-print-margin="0">
 <div class="section-title-big" style="padding:40px 0 10px">初級ミクロ経済学</div>
 <div class="cover-sub">＠明治学院大学 ｜ 2027年度版</div>
 <div><div class="cover-author">多鹿 智哉</div></div>
@@ -2389,42 +2613,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 <template class="slide-data" data-title="授業予定" data-section="はじめに" data-note="false" data-print-margin="0">
+<!-- 各回の最初のスライド（data-lecture）へのリンク -->
 <div class="columns">
 <div class="column">
 初級ミクロ経済学1の予定
 <ol>
-<li>オリエンテーション</li>
-<li>合理的な行動・費用便益分析</li>
-<li>需要と供給</li>
-<li>市場均衡・余剰の図解</li>
-<li>パレート効率性</li>
-<li>価格弾力性・曲線のシフト</li>
-<li>市場均衡分析の応用例（1，2）</li>
-<li>課税</li>
-<li>市場の失敗（外部性，コース交渉）</li>
-<li>市場の失敗（情報の非対称性・カルテル）</li>
-<li>ゲーム理論（逐次手番）</li>
-<li>ゲーム理論（同時手番）</li>
-<li>ゲーム理論（提携形ゲーム）</li>
+<li><a class="lec-link" href="?lecture=1-1" onclick="return goLecture('1-1')">オリエンテーション</a><span class="lec-date" data-lec="1-1"></span></li>
+<li><a class="lec-link" href="?lecture=1-2" onclick="return goLecture('1-2')">合理的な行動・費用便益分析</a><span class="lec-date" data-lec="1-2"></span></li>
+<li><a class="lec-link" href="?lecture=1-3" onclick="return goLecture('1-3')">需要と供給</a><span class="lec-date" data-lec="1-3"></span></li>
+<li><a class="lec-link" href="?lecture=1-4" onclick="return goLecture('1-4')">市場均衡・余剰の図解</a><span class="lec-date" data-lec="1-4"></span></li>
+<li><a class="lec-link" href="?lecture=1-5" onclick="return goLecture('1-5')">パレート効率性</a><span class="lec-date" data-lec="1-5"></span></li>
+<li><a class="lec-link" href="?lecture=1-6" onclick="return goLecture('1-6')">価格弾力性・曲線のシフト</a><span class="lec-date" data-lec="1-6"></span></li>
+<li><a class="lec-link" href="?lecture=1-7" onclick="return goLecture('1-7')">市場均衡分析の応用例（1，2）</a><span class="lec-date" data-lec="1-7"></span></li>
+<li><a class="lec-link" href="?lecture=1-8" onclick="return goLecture('1-8')">課税</a><span class="lec-date" data-lec="1-8"></span></li>
+<li><a class="lec-link" href="?lecture=1-9" onclick="return goLecture('1-9')">市場の失敗（外部性，コース交渉）</a><span class="lec-date" data-lec="1-9"></span></li>
+<li><a class="lec-link" href="?lecture=1-10" onclick="return goLecture('1-10')">市場の失敗（情報の非対称性・カルテル）</a><span class="lec-date" data-lec="1-10"></span></li>
+<li><a class="lec-link" href="?lecture=1-11" onclick="return goLecture('1-11')">ゲーム理論（逐次手番）</a><span class="lec-date" data-lec="1-11"></span></li>
+<li><a class="lec-link" href="?lecture=1-12" onclick="return goLecture('1-12')">ゲーム理論（同時手番）</a><span class="lec-date" data-lec="1-12"></span></li>
+<li><a class="lec-link" href="?lecture=1-13" onclick="return goLecture('1-13')">ゲーム理論（提携形ゲーム）</a><span class="lec-date" data-lec="1-13"></span></li>
 <li>試験</li>
 </ol>
 </div>
 <div class="column">
 初級ミクロ経済学2の予定
 <ol>
-<li>オリエンテーション・消費者の問題</li>
-<li>予算制約と無差別曲線</li>
-<li>効用最大化条件</li>
-<li>所得の影響・価格の影響</li>
-<li>スルツキー分解</li>
-<li>純粋交換経済・エッジワースボックス</li>
-<li>純粋交換経済・厚生定理</li>
-<li>企業の行動・費用と利潤最大化条件</li>
-<li>損益分岐点・操業停止点</li>
-<li>費用曲線を作る生産関数</li>
-<li>売り方の設計：独占価格</li>
-<li>売り方の設計：価格差別</li>
-<li>売り方の設計：オークション</li>
+<li><a class="lec-link" href="?lecture=2-1" onclick="return goLecture('2-1')">オリエンテーション・消費者の問題</a><span class="lec-date" data-lec="2-1"></span></li>
+<li><a class="lec-link" href="?lecture=2-2" onclick="return goLecture('2-2')">予算制約と無差別曲線</a><span class="lec-date" data-lec="2-2"></span></li>
+<li><a class="lec-link" href="?lecture=2-3" onclick="return goLecture('2-3')">効用最大化条件</a><span class="lec-date" data-lec="2-3"></span></li>
+<li><a class="lec-link" href="?lecture=2-4" onclick="return goLecture('2-4')">所得の影響・価格の影響</a><span class="lec-date" data-lec="2-4"></span></li>
+<li><a class="lec-link" href="?lecture=2-5" onclick="return goLecture('2-5')">スルツキー分解</a><span class="lec-date" data-lec="2-5"></span></li>
+<li><a class="lec-link" href="?lecture=2-6" onclick="return goLecture('2-6')">純粋交換経済・エッジワースボックス</a><span class="lec-date" data-lec="2-6"></span></li>
+<li><a class="lec-link" href="?lecture=2-7" onclick="return goLecture('2-7')">純粋交換経済・厚生定理</a><span class="lec-date" data-lec="2-7"></span></li>
+<li><a class="lec-link" href="?lecture=2-8" onclick="return goLecture('2-8')">企業の行動・費用と利潤最大化条件</a><span class="lec-date" data-lec="2-8"></span></li>
+<li><a class="lec-link" href="?lecture=2-9" onclick="return goLecture('2-9')">損益分岐点・操業停止点</a><span class="lec-date" data-lec="2-9"></span></li>
+<li><a class="lec-link" href="?lecture=2-10" onclick="return goLecture('2-10')">費用曲線を作る生産関数</a><span class="lec-date" data-lec="2-10"></span></li>
+<li><a class="lec-link" href="?lecture=2-11" onclick="return goLecture('2-11')">売り方の設計：独占価格</a><span class="lec-date" data-lec="2-11"></span></li>
+<li><a class="lec-link" href="?lecture=2-12" onclick="return goLecture('2-12')">売り方の設計：価格差別</a><span class="lec-date" data-lec="2-12"></span></li>
+<li><a class="lec-link" href="?lecture=2-13" onclick="return goLecture('2-13')">売り方の設計：オークション</a><span class="lec-date" data-lec="2-13"></span></li>
 <li>試験</li>
 </ol>
 </div>
@@ -2454,6 +2679,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <ul>
 <li>持ち物：筆記具，計算用紙，講義スライド</li>
 <li class="sub-item">スライドに板書や理解したことなどを書き込むこと</li>
+<li class="sub-item">書き込みはLMSで配布するPDFに（Web版にも書き込めるが，ログインしないとブラウザによって消えることがある）</li>
 <li class="sub-item">必ず書き込むための時間を取るので，聴くことと書くことは同時にやらない方が良い．</li>
 <li>この講義はオンデマンド授業です．</li>
 </ul>
@@ -2481,6 +2707,16 @@ document.addEventListener('DOMContentLoaded', () => {
 </div>
 </div>
 </template>
+
+<!-- ===== スライドの使い方（ボタンでツアーを開始。印刷しない） ===== -->
+<template class="slide-data" data-print="false" data-title="このスライドの使い方" data-section="はじめに" data-note="false" data-print-margin="0">
+<ul>
+<li>ボタンや機能を，画面上で順番に説明します．</li>
+<li class="sub-item">あとで見たいときは右上の「?」から．</li>
+</ul>
+<div style="margin:28px 0;"><button class="tour-start" onclick="startTour()">▶ 使い方を見る</button></div>
+</template>
+
 
 
 <!-- 初級ミクロ経済学1 -->
@@ -2598,7 +2834,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <!-- ============ SECTION: 意思決定 ============ -->
 
-<template class="slide-data" data-title="" data-section="意思決定" data-note="false" data-print-margin="0">
+<template class="slide-data" data-lecture="1-2" data-title="" data-section="意思決定" data-note="false" data-print-margin="0">
 <div class="section-title-big">意思決定</div>
 </template>
 
@@ -2753,7 +2989,7 @@ $$\text{効用}=\text{便益}-\text{費用}$$
 
 <!-- ============ SECTION: 需要と供給 ============ -->
 
-<template class="slide-data" data-title="" data-section="需要と供給" data-note="false" data-print-margin="0">
+<template class="slide-data" data-lecture="1-3" data-title="" data-section="需要と供給" data-note="false" data-print-margin="0">
 <div class="section-title-big">需要と供給</div>
 </template>
 
@@ -2955,7 +3191,7 @@ $$\text{効用}=\text{便益}-\text{費用}$$
 </div>
 </template> -->
 
-<template class="slide-data" data-title="" data-section="需要と供給" data-note="false" data-print-margin="0">
+<template class="slide-data" data-lecture="1-4" data-title="" data-section="需要と供給" data-note="false" data-print-margin="0">
 <div class="section-title-big">余剰と効率性</div>
 </template>
 
@@ -3019,6 +3255,11 @@ $$\text{効用}=\text{便益}-\text{費用}$$
 </template>
 
 
+
+<!-- 授業回の区切り（印刷しない） -->
+<template class="slide-data" data-lecture="1-5" data-print="false" data-title="" data-section="需要と供給" data-note="false" data-print-margin="0">
+<div class="section-title-big">パレート効率性</div>
+</template>
 
 <template class="slide-data" data-title="余剰について" data-section="需要と供給" data-note="false" data-print-margin="0">
 <div class="columns">
@@ -3088,7 +3329,7 @@ $$\text{効用}=\text{便益}-\text{費用}$$
 </table>
 </template>
 
-<template class="slide-data" data-title="" data-section="需要と供給" data-note="false" data-print-margin="0">
+<template class="slide-data" data-lecture="1-6" data-title="" data-section="需要と供給" data-note="false" data-print-margin="0">
 <div class="section-title-big">価格弾力性</div>
 </template>
 
@@ -3291,7 +3532,7 @@ $$\text{需要の価格弾力性}= -\frac{\text{需要量の変化率}}{\text{�
 </div>
 </template>
 
-<template class="slide-data" data-title="" data-section="需要と供給" data-note="false" data-print-margin="0">
+<template class="slide-data" data-lecture="1-7" data-title="" data-section="需要と供給" data-note="false" data-print-margin="0">
 <div class="section-title-big">市場均衡分析の応用</div>
 </template>
 
@@ -3344,6 +3585,11 @@ $$\text{需要の価格弾力性}= -\frac{\text{需要量の変化率}}{\text{�
 </div>
 </template>
 
+<!-- 授業回の区切り（印刷しない） -->
+<template class="slide-data" data-lecture="1-8" data-print="false" data-title="" data-section="需要と供給" data-note="false" data-print-margin="0">
+<div class="section-title-big">課税</div>
+</template>
+
 <template class="slide-data" data-title="市場均衡分析の応用例③ 課税の効果" data-section="需要と供給" data-note="false" data-print-margin="0">
 <div class="columns">
 <div class="column">
@@ -3353,8 +3599,12 @@ $$\text{需要の価格弾力性}= -\frac{\text{需要量の変化率}}{\text{�
 <li><span class="keyword">従量税</span>を考える．一単位購入するごとに税が$t$円課される．</li>
 <li>財を一単位購入するとき，</li>
 <li class="sub-item">消費者の支払額:</li>
+<li class="spacer"></li>
 <li class="sub-item">生産者の受け取る額:</li>
+<li class="spacer"></li>
 <li>実質的な価格は?</li>
+<li class="spacer"></li>
+<li class="spacer"></li>
 </ul>
 </div>
 <div class="column">
@@ -3400,22 +3650,30 @@ $$\text{需要の価格弾力性}= -\frac{\text{需要量の変化率}}{\text{�
 </template>
 
 <template class="slide-data" data-title="課税の効果のつづき③ どの財に課税すべきか?" data-section="需要と供給" data-note="false" data-print-margin="0">
-<div class="tikz-figure"><img src="img_micro/optax1-ch1.svg" alt="死荷重損失の比較：非弾力的な需要（左, 死荷重小）と弾力的な需要（右, 死荷重大）"></div>
 <ul>
 <li>需要曲線の傾き（弾力性）に注目</li>
-<li class="sub-item">弾力性が高い ➯
+</ul>
+<div class="tikz-figure"><img src="img_micro/optax1-ch1.svg" alt="死荷重損失の比較：非弾力的な需要（左, 死荷重小）と弾力的な需要（右, 死荷重大）"></div>
+<!-- 図の左＝急な需要曲線（弾力性が低い），右＝緩やかな需要曲線（弾力性が高い）に合わせて2列 -->
+<div class="columns">
+<div class="column">
+<ul>
+<li class="sub-item">弾力性が低い ➯</li>
 <li class="spacer"></li>
 <li class="spacer"></li>
 <li class="spacer"></li>
+</ul>
+</div>
+<div class="column">
+<ul>
+<li class="sub-item">弾力性が高い ➯</li>
 <li class="spacer"></li>
-
- <li class="sub-item">弾力性が低い ➯
 <li class="spacer"></li>
 <li class="spacer"></li>
-<li class="spacer"></li>
-<li class="spacer"></li>
-
- 
+</ul>
+</div>
+</div>
+<ul>
 <li><span class="keyword">ラムゼイ・ルール</span>(Ramsey, 1927，逆弾力性ルールとも):</li>
 <li class="spacer"></li>
 <li class="spacer"></li>
@@ -3427,7 +3685,7 @@ $$\text{需要の価格弾力性}= -\frac{\text{需要量の変化率}}{\text{�
 
 <!-- ============ SECTION: 市場の失敗 ============ -->
 
-<template class="slide-data" data-title="" data-section="市場の失敗" data-note="false" data-print-margin="0">
+<template class="slide-data" data-lecture="1-9" data-title="" data-section="市場の失敗" data-note="false" data-print-margin="0">
 <div class="section-title-big">市場の失敗</div>
 </template>
 
@@ -3584,7 +3842,7 @@ $$\text{需要の価格弾力性}= -\frac{\text{需要量の変化率}}{\text{�
 </template>
 
 
-<template class="slide-data" data-title="" data-section="市場の失敗" data-note="false" data-print-margin="0">
+<template class="slide-data" data-lecture="1-10" data-title="" data-section="市場の失敗" data-note="false" data-print-margin="0">
 <div class="section-title-big">情報の非対称性</div>
 </template>
 
@@ -3636,8 +3894,11 @@ $$\text{需要の価格弾力性}= -\frac{\text{需要量の変化率}}{\text{�
 <ul>
 <li>良いものと悪いものが半々だとする</li>
 <li class="sub-item">買い手の評価は</li>
+<li class="spacer"></li>
 <li class="sub-item">買ってもらうためには価格は最大でも</li>
+<li class="spacer"></li>
 <li class="sub-item">上記の価格で売り手は売りたいか？<br>良い売り手：<br>悪い売り手：</li>
+<li class="spacer"></li>
 <li class="sub-item arrow">→ 市場には悪いものしか残らない！</li>
 <li><span class="keyword">逆淘汰</span>（逆選抜，逆選択とも）</li>
 <li class="sub-item">良いものが駆逐される</li>
@@ -3712,7 +3973,7 @@ $$\text{需要の価格弾力性}= -\frac{\text{需要量の変化率}}{\text{�
 
 
 <!-- SECTION: ゲーム理論 -->
-<template class="slide-data" data-title="" data-section="ゲーム理論" data-note="false" data-print-margin="0">
+<template class="slide-data" data-lecture="1-11" data-title="" data-section="ゲーム理論" data-note="false" data-print-margin="0">
 <div class="section-title-big">ゲーム理論</div>
 </template>
 
@@ -3848,7 +4109,7 @@ $$\text{需要の価格弾力性}= -\frac{\text{需要量の変化率}}{\text{�
 </template>
 
 
-<template class="slide-data" data-title="" data-section="ゲーム理論" data-note="false" data-print-margin="0">
+<template class="slide-data" data-lecture="1-12" data-title="" data-section="ゲーム理論" data-note="false" data-print-margin="0">
 <div class="section-title-big">同時手番のゲーム</div>
 </template>
 
@@ -3997,8 +4258,12 @@ $$\text{需要の価格弾力性}= -\frac{\text{需要量の変化率}}{\text{�
 <ul>
 <li>ナッシュ均衡は
 </li>
+<li class="spacer"></li>
+<li class="spacer"></li>
 <ul>
 <li> どちらがもっともらしいか？</li>
+<li class="spacer"></li>
+<li class="spacer"></li>
 </ul>
 </ul>
 </div>
@@ -4012,8 +4277,12 @@ $$\text{需要の価格弾力性}= -\frac{\text{需要量の変化率}}{\text{�
 <ul>
 <li>ナッシュ均衡は
 </li>
+<li class="spacer"></li>
+<li class="spacer"></li>
 <ul>
 <li> どちらがもっともらしいか？</li>
+<li class="spacer"></li>
+<li class="spacer"></li>
 </ul>
 </ul>
 </div>
@@ -4128,7 +4397,7 @@ $$\text{需要の価格弾力性}= -\frac{\text{需要量の変化率}}{\text{�
 </ul>
 </template>
 
-<template class="slide-data" data-title="" data-section="ゲーム理論" data-note="false" data-print-margin="0">
+<template class="slide-data" data-lecture="1-13" data-title="" data-section="ゲーム理論" data-note="false" data-print-margin="0">
 <div class="section-title-big">提携形ゲーム</div>
 </template>
 
@@ -4173,12 +4442,24 @@ $$\text{需要の価格弾力性}= -\frac{\text{需要量の変化率}}{\text{�
 </ul>
 </template>
 
-<template class="slide-data" data-title="コア：例1" data-section="ゲーム理論" data-note="false" data-print-margin="300">
+<template class="slide-data" data-title="コア：例1" data-section="ゲーム理論" data-note="false" data-print-margin="40">
 <ul>
 <li>$v(\{i\})=0$，2人提携はどれも $10$，$v(\{1,2,3\})=20$</li>
+</ul>
+<div class="columns">
+<div class="column">
+<ul>
 <li class="sub-item">$x=(15,3,2)$ はコア配分か？</li>
+</ul>
+<div class="write-space" style="height:14em"></div>
+</div>
+<div class="column">
+<ul>
 <li class="sub-item">$x=(10,5,5)$ はコア配分か？</li>
 </ul>
+<div class="write-space" style="height:14em"></div>
+</div>
+</div>
 </template>
 
 <template class="slide-data" data-title="コア：例2" data-section="ゲーム理論" data-note="false" data-print-margin="300">
@@ -4215,9 +4496,10 @@ $$\text{需要の価格弾力性}= -\frac{\text{需要量の変化率}}{\text{�
 
 <!-- 初級ミクロ経済学2 -->
 
-<template class="slide-data" data-title="" data-section="" data-part="初級ミクロ経済学2" data-note="false" data-print-margin="0">
+<template class="slide-data" data-lecture="2-1" data-title="" data-section="" data-part="初級ミクロ経済学2" data-note="false" data-print-margin="0">
 <div class="section-title-big" style="padding:40px 0 10px">初級ミクロ経済学2</div>
-
+<!-- オリエンテーションはミクロ1と共通なので繰り返さず，ここから飛べるようにする -->
+<div class="divider-link"><a href="#" onclick="showSlide(SLIDES.findIndex(s => s.section === 'はじめに')); return false;">授業の進め方・成績評価（オリエンテーション）はこちら →</a></div>
 </template>
 
 
@@ -4336,7 +4618,7 @@ $$\text{需要の価格弾力性}= -\frac{\text{需要量の変化率}}{\text{�
 </div>
 </template>
 
-<template class="slide-data" data-title="" data-section="消費者の行動" data-note="false" data-print-margin="0">
+<template class="slide-data" data-lecture="2-2" data-title="" data-section="消費者の行動" data-note="false" data-print-margin="0">
 <div class="section-title-big">予算制約</div>
 </template>
 
@@ -4458,7 +4740,7 @@ $$m= p_{x}\cdot q_{x}+p_{y}\cdot q_{y}$$
 </div>
 </template>
 
-<template class="slide-data" data-title="" data-section="消費者の行動" data-note="false" data-print-margin="0">
+<template class="slide-data" data-lecture="2-3" data-title="" data-section="消費者の行動" data-note="false" data-print-margin="0">
 <div class="section-title-big">効用最大化</div>
 </template>
 
@@ -4527,16 +4809,29 @@ $$\underbrace{MRS_{xy}=\frac{MU_x}{MU_y}}_{\text{$x$の$y$に対する限界代�
 <template class="slide-data" data-title="効用最大化条件・成り立たないケース" data-section="消費者の行動" data-note="false" data-print-margin="0">
 </template>
 
-<template class="slide-data" data-title="" data-section="消費者の行動" data-note="false" data-print-margin="0">
+<template class="slide-data" data-lecture="2-4" data-title="" data-section="消費者の行動" data-note="false" data-print-margin="0">
 <div class="section-title-big">所得・価格の変化と需要</div>
 </template>
 
 <template class="slide-data" data-title="所得による需要の変化" data-section="消費者の行動" data-note="false" data-print-margin="0">
-<div class="tikz-figure"><img src="img_micro/income_effect.svg" alt="正常財と劣等財"></div>
+<div class="tikz-figure"><img src="img_micro/income_effect.svg" alt="正常財（左）と劣等財（右）"></div>
+<!-- 図の左＝正常財，右＝劣等財に合わせて2列 -->
+<div class="columns">
+<div class="column">
 <ul>
 <li><span class="keyword">正常財</span>（あるいは<span class="keyword">上級財</span>）</li>
-<li><span class="keyword">劣等財</span>（あるいは<span class="keyword">下級財</span>）</li>
+<li class="spacer"></li>
+<li class="spacer"></li>
 </ul>
+</div>
+<div class="column">
+<ul>
+<li><span class="keyword">劣等財</span>（あるいは<span class="keyword">下級財</span>）</li>
+<li class="spacer"></li>
+<li class="spacer"></li>
+</ul>
+</div>
+</div>
 </template>
 
 <template class="slide-data" data-title="所得消費曲線" data-section="消費者の行動" data-note="false" data-print-margin="0">
@@ -4595,6 +4890,11 @@ $$\underbrace{MRS_{xy}=\frac{MU_x}{MU_y}}_{\text{$x$の$y$に対する限界代�
 <li>所得効果と混ざってしまう！</li>
 <li class="sub-item arrow">→ 所得効果を分離したい → <span class="keyword">スルツキー分解</span>という技がある</li>
 </ul>
+</template>
+
+<!-- 授業回の区切り（印刷しない） -->
+<template class="slide-data" data-lecture="2-5" data-print="false" data-title="" data-section="消費者の行動" data-note="false" data-print-margin="0">
+<div class="section-title-big">スルツキー分解</div>
 </template>
 
 <template class="slide-data" data-title="スルツキー分解" data-section="消費者の行動" data-note="false" data-print-margin="0">
@@ -4661,7 +4961,7 @@ $$\underbrace{MRS_{xy}=\frac{MU_x}{MU_y}}_{\text{$x$の$y$に対する限界代�
 
 <!-- ============ SECTION: 複数財市場の均衡 ============ -->
 
-<template class="slide-data" data-title="" data-section="複数財市場の均衡" data-note="false" data-print-margin="0">
+<template class="slide-data" data-lecture="2-6" data-title="" data-section="複数財市場の均衡" data-note="false" data-print-margin="0">
 <div class="section-title-big">複数財市場の均衡</div>
 </template>
 
@@ -4711,7 +5011,7 @@ $$q_{Ly}+q_{Ky}=e_{Ly}+e_{Ky}$$
 </div>
 </template>
 
-<template class="slide-data" data-title="" data-section="複数財市場の均衡" data-note="false" data-print-margin="0">
+<template class="slide-data" data-lecture="2-7" data-title="" data-section="複数財市場の均衡" data-note="false" data-print-margin="0">
 <div class="section-title-big">厚生定理</div>
 </template>
 
@@ -4772,7 +5072,7 @@ $$q_{Ly}+q_{Ky}=e_{Ly}+e_{Ky}$$
 
 <!-- ============ SECTION: 企業の行動 ============ -->
 
-<template class="slide-data" data-title="" data-section="企業の行動" data-note="false" data-print-margin="0">
+<template class="slide-data" data-lecture="2-8" data-title="" data-section="企業の行動" data-note="false" data-print-margin="0">
 <div class="section-title-big">企業の行動</div>
 </template>
 
@@ -4865,11 +5165,21 @@ $$q_{Ly}+q_{Ky}=e_{Ly}+e_{Ky}$$
 </ul>
 </template>
 
-<template class="slide-data" data-title="練習問題" data-section="企業の行動" data-note="false" data-print-margin="300">
+<template class="slide-data" data-title="練習問題" data-section="企業の行動" data-note="false" data-print-margin="40">
+<div class="columns">
+<div class="column">
 <ol>
 <li>$C(q)=q^2+q$とする．供給関数を求めなさい．</li>
+</ol>
+<div class="write-space" style="height:14em"></div>
+</div>
+<div class="column">
+<ol start="2">
 <li>$C(q)=4\cdot q$だとする．供給関数を求めなさい（微分では解けない）．</li>
 </ol>
+<div class="write-space" style="height:14em"></div>
+</div>
+</div>
 </template>
 
 <template class="slide-data" data-title="" data-section="企業の行動" data-note="false" data-print-margin="0">
@@ -4882,18 +5192,31 @@ $$q_{Ly}+q_{Ky}=e_{Ly}+e_{Ky}$$
 <ul>
 <li>総費用関数のより細かい構造を見る．例として$C(q)=q^2+q+5$</li>
 <li class="sub-item"><span class="keyword">可変費用</span>とは</li>
+<li class="spacer"></li>
+<li class="spacer"></li>
 <li class="sub-item"><span class="keyword">固定費用</span>とは</li>
+<li class="spacer"></li>
+<li class="spacer"></li>
 </ul>
 </div>
 <div class="column">
 <ul>
 <li>経済学における短期と長期</li>
 <li class="sub-item">短期とは</li>
+<li class="spacer"></li>
+<li class="spacer"></li>
 <li class="sub-item">長期とは</li>
+<li class="spacer"></li>
+<li class="spacer"></li>
 <li>固定費用 $\neq$ 埋没費用</li>
 </ul>
 </div>
 </div>
+</template>
+
+<!-- 授業回の区切り（印刷しない） -->
+<template class="slide-data" data-lecture="2-9" data-print="false" data-title="" data-section="企業の行動" data-note="false" data-print-margin="0">
+<div class="section-title-big">損益分岐点・操業停止点</div>
 </template>
 
 <template class="slide-data" data-title="損益分岐点" data-section="企業の行動" data-note="false" data-print-margin="0">
@@ -4901,8 +5224,15 @@ $$q_{Ly}+q_{Ky}=e_{Ly}+e_{Ky}$$
 <li>どのようなときに利益が黒字か（赤字か）？</li>
 <li class="sub-item arrow">→ <span class="keyword">損益分岐点</span>を求める．</li>
 <li>黒字と赤字の境目＝利潤が0の条件は</li>
+<li class="spacer"></li>
+<li class="spacer"></li>
 <li class="sub-item">損益分岐点での価格は</li>
+<li class="spacer"></li>
+<li class="spacer"></li>
 <li>利潤最大化条件を使うと...</li>
+<li class="spacer"></li>
+<li class="spacer"></li>
+<li class="spacer"></li>
 </ul>
 </template>
 
@@ -4921,24 +5251,44 @@ $$q_{Ly}+q_{Ky}=e_{Ly}+e_{Ky}$$
 </div>
 </template>
 
-<template class="slide-data" data-title="例題1" data-section="企業の行動" data-note="false" data-print-margin="300">
+<template class="slide-data" data-title="例題1" data-section="企業の行動" data-note="false" data-print-margin="40">
 <p>費用関数が$C(q)=q^{2}+q+4$だとする．</p>
+<div class="columns">
+<div class="column">
 <ol>
 <li>損益分岐点の価格と生産量を求めなさい．</li>
+</ol>
+<div class="write-space" style="height:14em"></div>
+</div>
+<div class="column">
+<ol start="2">
 <li>操業停止点の価格と生産量を求めなさい．</li>
 </ol>
+<div class="write-space" style="height:14em"></div>
+</div>
+</div>
 </template>
 
-<template class="slide-data" data-title="例題2" data-section="企業の行動" data-note="false" data-print-margin="300">
+<template class="slide-data" data-title="例題2" data-section="企業の行動" data-note="false" data-print-margin="40">
 <p>費用関数が$C(q)=q^3-3q^{2}+5q+4$だとする．図を描いて次の問いに答えなさい</p>
+<div class="columns">
+<div class="column">
 <ol>
 <li>損益分岐点の価格と生産量を求めなさい．</li>
+</ol>
+<div class="write-space" style="height:18em"></div>
+</div>
+<div class="column">
+<ol start="2">
 <li>操業停止点の価格と生産量を求めなさい．</li>
 </ol>
+<div class="write-space" style="height:18em"></div>
+</div>
+</div>
 </template>
 
 
-<template class="slide-data" data-title="" data-section="企業の行動" data-note="false" data-print-margin="0">
+<template class="slide-data" data-lecture="2-10" data-title="" data-section="企業の行動" data-note="false" data-print-margin="0">
 <div class="section-title-big">生産関数</div>
 </template>
 
@@ -5156,7 +5506,7 @@ $$\frac{w}{MP_L}= \frac{r}{MP_K} \Rightarrow \frac{MP_K}{MP_L}= \frac{r}{w}$$
 
 <!-- ============ SECTION: 独占市場 ============ -->
 
-<template class="slide-data" data-title="" data-section="売り方の設計" data-note="false" data-print-margin="0">
+<template class="slide-data" data-lecture="2-11" data-title="" data-section="売り方の設計" data-note="false" data-print-margin="0">
 <div class="section-title-big">売り方の設計</div>
 </template>
 
@@ -5283,7 +5633,7 @@ $$\frac{w}{MP_L}= \frac{r}{MP_K} \Rightarrow \frac{MP_K}{MP_L}= \frac{r}{w}$$
 
 
 
-<template class="slide-data" data-title="" data-section="売り方の設計" data-note="false" data-print-margin="0">
+<template class="slide-data" data-lecture="2-12" data-title="" data-section="売り方の設計" data-note="false" data-print-margin="0">
 <div class="section-title-big">価格差別</div>
 </template>
 
@@ -5495,7 +5845,7 @@ $$\frac{w}{MP_L}= \frac{r}{MP_K} \Rightarrow \frac{MP_K}{MP_L}= \frac{r}{w}$$
 </template>
 
 
-<template class="slide-data" data-title="" data-section="売り方の設計" data-note="false" data-print-margin="0">
+<template class="slide-data" data-lecture="2-13" data-title="" data-section="売り方の設計" data-note="false" data-print-margin="0">
 <div class="section-title-big">オークション</div>
 </template>
 
@@ -5550,10 +5900,14 @@ $$\frac{w}{MP_L}= \frac{r}{MP_K} \Rightarrow \frac{MP_K}{MP_L}= \frac{r}{w}$$
 </table>
 <ul>
 <li>全員が正直に入札するとき，誰がいくらで落札し，もうけはいくらか？</li>
+<li class="spacer"></li>
 <li>次のように嘘をつくと，もうけはどうなるか？</li>
 <li class="sub-item">Aが35と書く</li>
+<li class="spacer"></li>
 <li class="sub-item">Aが23と書く</li>
+<li class="spacer"></li>
 <li class="sub-item">Cが31と書く</li>
+<li class="spacer"></li>
 </ul>
 </template>
 

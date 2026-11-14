@@ -23,8 +23,25 @@
        getSlideCount: () => SLIDES.length,
        getSlideId: (i) => SLIDES[i].id,     // 任意: スライドの安定 ID。無ければ番号（#1, #2, …）
        getSections: () => SECTIONS,         // 任意: [{title, slide}]（トピック名の既定値に使う）
+       getLecture: (i) => SLIDES[i].lecture, // 任意: 授業回（公開日の CSV で使う）
        // 任意: boardUrl, fixedLayout:true, hooks:{ redraw:'redrawStrokes', show:'showSlide' }
      });
+
+   公開日の設定（任意）:
+     board/<deck>.schedule.csv（adapter の scheduleUrl で変更可）を置くと、日時を過ぎたセクションの
+     板書・再生ボタンだけを学生に出す。1 列目が公開日時、2 列目が授業回（スライドの data-lecture。
+     adapter の getLecture で渡す）、セクション名（data-section）またはトピック名。3 列目以降は自由（メモ）。
+     # で始まる行と、1 列目が日付でない行（見出し）は無視。
+       公開日,回,メモ
+       2027-04-15,1-3,需要と供給
+       2027-04-22 10:40,消費者の行動
+     ・日付だけなら、その日の 0:00（閲覧者の端末の時刻）から公開
+     ・CSV があるときは、CSV に書いていないセクションは公開しない（書き忘れで先に出ないように）
+     ・CSV が無ければ従来どおりすべて公開。作成モード（?author=1）では常にすべて表示
+     ・公開前のトピックで使う線は、そのトピックが公開されるまで隠す
+     ・ブラウザ側で隠すだけなので、JSON や音声ファイルを直接開けば見られる点に注意
+     ・読み込んだ日程は SlideBoard.schedule（Map）に入り、document に 'slideboard:schedule' イベントを出す
+       （ページ側で公開予定日を表示するのに使う）
 
    座標の決まり（slide-live.js と同じ）:
      ・スライド幅を 1100px に固定（body.live-fixed）し、画面に収まらない分は zoom で縮める
@@ -118,6 +135,67 @@
       try { const b = JSON.parse(ls.get(keyAuthor()) || 'null'); if (validBoard(b)) return [b, 'このブラウザの作成データ']; } catch (e) {}
     }
     return [emptyBoard(), ''];
+  }
+
+  /* ── 公開日（schedule CSV）─────────────────────────────────────────────── */
+  function parseWhen(t) {
+    const m = String(t).trim().match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})(?:[ T](\d{1,2}):(\d{2}))?$/);
+    return m ? new Date(+m[1], +m[2] - 1, +m[3], +(m[4] || 0), +(m[5] || 0)) : null;
+  }
+  function parseCSV(text) {
+    const rows = [];
+    text.replace(/^\uFEFF/, '').split(/\r?\n/).forEach(line => {
+      if (!line.trim() || line.trim().startsWith('#')) return;
+      const cells = []; let cell = '', q = false;
+      for (let k = 0; k < line.length; k++) {
+        const c = line[k];
+        if (q) { if (c === '"' && line[k + 1] === '"') { cell += '"'; k++; } else if (c === '"') q = false; else cell += c; }
+        else if (c === '"') q = true; else if (c === ',') { cells.push(cell); cell = ''; } else cell += c;
+      }
+      cells.push(cell); rows.push(cells.map(c => c.trim()));
+    });
+    return rows;
+  }
+  async function loadSchedule() {
+    const url = A.scheduleUrl || `board/${A.deck}.schedule.csv`;
+    try {
+      const r = await fetch(url, { cache: 'no-cache' });
+      if (!r.ok) return null;
+      const map = new Map();   // 名前 → 公開日時（同じ名前が複数あれば早い方）
+      parseCSV(await r.text()).forEach(([d, name]) => {
+        const when = parseWhen(d || '');
+        if (!when || !name) return;
+        if (!map.has(name) || when < map.get(name)) map.set(name, when);
+      });
+      return map;
+    } catch (e) { return null; }
+  }
+  function applySchedule(sched) {
+    const now = new Date();
+    const open = name => !!name && sched.has(name) && sched.get(name) <= now;
+    const lec = i => (A.getLecture && A.getLecture(i)) || '';
+    const slideOpen = i => i >= 0 && (open(lec(i)) || open(sectionTitle(i)));
+    const shown = [], hidden = [];
+    board.topics.forEach(tp => {
+      const i = indexOfId(tp.startSlide);
+      (open(tp.name) || slideOpen(i) ? shown : hidden).push(tp);
+    });
+    board.topics = shown;
+    const hiddenTopics = hidden.length;
+    // 公開済みトピックが使うスライドの線は残す（再生で必要）。公開前トピックだけが使う線は隠す
+    const usedSlides = new Set(), usedStrokes = new Set(), secretStrokes = new Set();
+    shown.forEach(tp => (tp.events || []).forEach(ev => {
+      if (ev.slide) usedSlides.add(ev.slide);
+      if (ev.type === 'stroke') usedStrokes.add(ev.id);
+    }));
+    hidden.forEach(tp => (tp.events || []).forEach(ev => { if (ev.type === 'stroke' && !usedStrokes.has(ev.id)) secretStrokes.add(ev.id); }));
+    let hiddenSlides = 0;
+    Object.keys(board.slides).forEach(id => {
+      const i = indexOfId(id);
+      if (!usedSlides.has(id) && !slideOpen(i)) { delete board.slides[id]; hiddenSlides++; return; }
+      if (secretStrokes.size) board.slides[id].strokes = board.slides[id].strokes.filter(st => !secretStrokes.has(st.id));
+    });
+    if (hiddenTopics || hiddenSlides) console.info(`[slide-board] 公開日前のため非表示：トピック ${hiddenTopics} 件、板書のあるスライド ${hiddenSlides} 枚`);
   }
 
   /* ── 固定レイアウト（slide-live.js と同じ仕組み）────────────────────────── */
@@ -516,7 +594,7 @@
     play = { mode: 'slide', slide: curId(), items: b.items, clock, duration: b.duration, get t() { return this.clock.currentTime; } };
     clock.play(); showPlayer('このスライドの板書'); loop();
   }
-  function playTopic(ti) {
+  function playTopic(ti, startAt = 0) {
     if (rec) return;
     stopPlayback();
     const topic = board.topics[ti];
@@ -547,6 +625,7 @@
     } else clock = new Clock(topic.duration);
     clock.playbackRate = speed();
     play = { mode: 'topic', topic, clock, itemsBySlide, pointerBySlide, animBySlide, revealBySlide, follow: true, duration: topic.duration };
+    if (startAt > 0) clock.currentTime = startAt;
     clock.play().catch(() => status('再生を開始できませんでした'));
     showPlayer(topic.name + (topic.audio ? '' : '（音声なし）'));
     loop();
@@ -699,6 +778,9 @@
       #sbTopics button { font:inherit; font-size:14px; padding:9px 14px; border:none; border-radius:10px; cursor:pointer;
         background:var(--accent, #e94560); color:#fff; box-shadow:0 3px 12px rgba(0,0,0,.25); text-align:left; }
       #sbTopics button.del { background:#6b7280; padding:9px 11px; }
+      #sbTopics button.main { font-size:16px; font-weight:700; padding:12px 18px; }
+      #sbTopics button.sub { font-size:13px; padding:7px 12px; background:#fff; color:var(--accent, #e94560);
+        border:1.5px solid var(--accent, #e94560); box-shadow:0 2px 8px rgba(0,0,0,.15); }
       #sbPlayer { position:fixed; left:50%; bottom:16px; transform:translateX(-50%); z-index:9001; display:none;
         align-items:center; gap:8px; background:rgba(26,26,46,.94); color:#fff; border-radius:12px; padding:7px 12px;
         font-size:13px; box-shadow:0 6px 24px rgba(0,0,0,.3); max-width:calc(100vw - 24px); }
@@ -855,12 +937,28 @@
     }
     const box = $('sbTopics'); box.innerHTML = '';
     if (rec) return;
+    // トピックの開始スライドでは大きく、同じ授業回（getLecture）の途中のスライドでは
+    // 「このスライドから再生」を出す（扉を飛ばして開いた学生も気づけるように）
+    const lecOf = i => (i >= 0 && A.getLecture && A.getLecture(i)) || '';
+    const curLec = lecOf(cur());
     board.topics.forEach((tp, i) => {
-      if (tp.startSlide !== curId()) return;
+      const atStart = tp.startSlide === curId();
+      if (!atStart && (AUTHOR || !curLec || lecOf(indexOfId(tp.startSlide)) !== curLec)) return;
+      const len = `${fmt(tp.duration)}${tp.audio ? '' : '・音声なし'}`;
       const row = document.createElement('div'); row.className = 'sb-topic';
       const b = document.createElement('button');
-      b.textContent = `▶ このトピックを再生：${tp.name}（${fmt(tp.duration)}${tp.audio ? '' : '・音声なし'}）`;
-      b.onclick = () => playTopic(i);
+      if (atStart) {
+        b.className = 'main';
+        // 授業回（getLecture：'1-3' など）があれば「第3回の講義を再生」
+        const n = (lecOf(cur()).split('-')[1] || '');
+        b.textContent = `▶ ${n ? `第${n}回の` : ''}講義を再生：${tp.name}（${len}）`;
+        b.onclick = () => playTopic(i);
+      } else {
+        const ev = (tp.events || []).find(e => e.type === 'slide' && e.id === curId());
+        b.className = 'sub';
+        if (ev) { b.textContent = `▶ このスライドから講義を再生：${tp.name}`; b.onclick = () => playTopic(i, Math.max(0, ev.t - 0.5)); }
+        else { b.textContent = `▶ この回の講義を最初から再生：${tp.name}（${len}）`; b.onclick = () => playTopic(i); }
+      }
       row.appendChild(b);
       if (AUTHOR) { const d = document.createElement('button'); d.className = 'del'; d.title = 'この記録を削除'; d.textContent = '✕'; d.onclick = () => deleteTopic(i); row.appendChild(d); }
       box.appendChild(row);
@@ -878,6 +976,12 @@
     let src;
     [board, src] = await loadBoard();
     board.topics = board.topics || [];
+    {
+      const sched = await loadSchedule();
+      SB.schedule = sched;   // 名前（授業回など）→ 公開日時。CSV が無ければ null
+      if (sched && !AUTHOR) applySchedule(sched);
+      document.dispatchEvent(new CustomEvent('slideboard:schedule', { detail: sched }));
+    }
     if (A.getSlideId && count() && !A.getSlideId(0)) console.warn('[slide-board] スライド ID が無いので番号で記録します（スライドの挿入・削除で板書がずれます）');
     injectUI();
     hookPage();
@@ -888,6 +992,7 @@
     if (AUTHOR) status('板書作成モード' + (src ? `（${src} を読み込み）` : '') + '。録音はトピック扉スライドから');
   };
   SB.isAuthor = () => AUTHOR;
+  SB.schedule = null;
   SB.getBoard = () => board;
   SB.stop = stopPlayback;
 

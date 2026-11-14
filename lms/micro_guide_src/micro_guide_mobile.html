@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>Web版スライドの使い方（スマホ用）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  /* 縦長版：720px 幅で組み，3 倍で書き出す（スマホの画面幅でそのまま読める文字の大きさ） */
+  :root {
+    --head: #0f3d48;
+    --accent: #0e7490;
+    --soft: #67e8f9;
+    --text: #1a1a1a;
+    --dim: #475569;
+    --bg: #f4f7f8;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { width: 720px; font-family: 'Noto Sans JP', sans-serif; color: var(--text); background: var(--bg); }
+  header { background: var(--head); color: #fff; padding: 34px 32px 30px; }
+  header .course { font-size: 22px; color: rgba(255,255,255,0.75); font-weight: 500; }
+  header h1 { margin: 4px 0 10px; font-size: 44px; font-weight: 900; letter-spacing: 0.02em; }
+  header .sub { font-size: 22px; color: var(--soft); font-weight: 700; }
+
+  .steps { display: flex; flex-direction: column; gap: 18px; padding: 22px 24px 0; }
+  .card { background: #fff; border-radius: 14px; padding: 18px 18px 18px; box-shadow: 0 2px 10px rgba(15,61,72,0.10); }
+  .card .head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .num { width: 42px; height: 42px; border-radius: 50%; background: var(--accent); color: #fff;
+         display: grid; place-items: center; font-size: 23px; font-weight: 900; flex-shrink: 0; }
+  .card h2 { margin: 0; font-size: 30px; font-weight: 900; color: var(--head); }
+  .row { display: grid; grid-template-columns: 270px 1fr; gap: 16px; align-items: start; }
+  .shot { position: relative; height: 216px; border-radius: 8px; overflow: hidden; border: 1px solid #dbe3e6; background: #fff; }
+  .shot img { width: 100%; height: 100%; object-fit: cover; object-position: top left; display: block; }
+  .ring { position: absolute; border: 3px solid #f59e0b; border-radius: 8px; box-shadow: 0 0 0 3px rgba(245,158,11,0.25); }
+  .card p { margin: 0; font-size: 23px; line-height: 1.6; }
+  .card p b { color: var(--head); }
+  .card .note { margin-top: 10px; font-size: 18px; color: var(--dim); line-height: 1.55; }
+
+  .help { margin: 18px 24px 28px; background: #fff; border-radius: 14px; padding: 18px 18px 20px; box-shadow: 0 2px 10px rgba(15,61,72,0.10); }
+  .help h2 { margin: 0 0 12px; font-size: 30px; font-weight: 900; color: var(--head); }
+  .help h2 span { font-size: 19px; font-weight: 500; color: var(--dim); margin-left: 10px; }
+  .bar { position: relative; }
+  .bar img { width: 100%; display: block; border-radius: 8px; }
+  .pin { position: absolute; top: -3px; bottom: -3px; width: 7.2%; margin-left: -3.6%; border: 3px solid #f59e0b; border-radius: 9px; }
+  .keys { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; font-size: 22px; }
+  .keys > div { display: flex; align-items: center; gap: 12px; }
+  .keys .ico { width: 26px; height: 26px; fill: none; stroke: var(--head); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  .keys .eye { width: 26px; text-align: center; font-size: 21px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="course">初級ミクロ経済学</div>
+  <h1>Web版スライドの使い方</h1>
+  <div class="sub">オンデマンド授業は 4 ステップ</div>
+</header>
+
+<section class="steps">
+  <div class="card">
+    <div class="head"><div class="num">1</div><h2>開く</h2></div>
+    <div class="row">
+      <div class="shot"><img src="C.png" alt="授業予定のスライド"></div>
+      <div><p>LMSの<b>各回のリンク</b>からスライドを開きます．</p>
+        <div class="note">「授業予定」のスライドからも各回へ移れます．公開予定日もここに出ます（未定は TBA）．</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="head"><div class="num">2</div><h2>再生する</h2></div>
+    <div class="row">
+      <div class="shot"><img src="A.png" alt="各回の最初のスライドと再生ボタン">
+        <div class="ring" style="left:1.6%; top:84%; width:66%; height:13.5%;"></div></div>
+      <div><p>各回の最初のスライドで<b>「▶ 第N回の講義を再生」</b>を押します．</p>
+        <div class="note">途中のスライドでは「このスライドから再生」になります．</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="head"><div class="num">3</div><h2>聞きながら見る</h2></div>
+    <div class="row">
+      <div class="shot"><img src="B.png" alt="再生中の画面（板書と再生バー）"></div>
+      <div><p>音声に合わせて<b>スライドがめくれ，板書が書かれて</b>いきます．</p>
+        <div class="note">下のバーで一時停止・巻き戻し・速度変更ができます．</div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="head"><div class="num">4</div><h2>ノートを取る</h2></div>
+    <div class="row">
+      <div class="shot"><img src="D.png" alt="配布PDFの書き込み欄"></div>
+      <div><p>ノートは<b>LMSで配布するPDF</b>に書き込みます．</p>
+        <div class="note">Web版にも書き込めますが，ログインしないとブラウザによって消えることがあります．</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="help">
+  <h2>困ったら<span>画面右上のボタン</span></h2>
+  <div class="bar">
+    <img src="toolbar.png" alt="ツールバー">
+    <!-- toolbar.png 内の位置（%）：検索 53.8，? 68.8，ログイン 76.3，板書 85.2 -->
+    <div class="pin" style="left:53.8%"></div>
+    <div class="pin" style="left:68.8%"></div>
+    <div class="pin" style="left:76.3%"></div>
+    <div class="pin" style="left:85.2%"></div>
+  </div>
+  <div class="keys">
+    <div><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>ボタンの使い方を順に説明</div>
+    <div><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg>キーワードでスライドを検索</div>
+    <div><svg class="ico" viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>ログインすると書き込みを保存（任意）</div>
+    <div><span class="eye">👁</span>先生の板書の表示・非表示</div>
+  </div>
+  <div class="keys" style="margin-top:12px; font-size:18px; color:var(--dim);">スマホでは一部のボタンが隠れます．左右にスワイプするとスライドを移動できます．</div>
+</section>
+</body>
+</html>
